@@ -4,7 +4,7 @@ import sys
 
 maxMemory = 30000
 maxProgram = 1000000
-maxInstructions = 200000
+maxInstructions = 1000000
 
 
 
@@ -110,4 +110,12 @@ while progPtr < maxProgram:
 	intructionCounter += 1
 	if intructionCounter > maxInstructions:
 		raise Exception('Execution takes too long: maximum number of instructions exceeded')
+
+
+print
+print "MEMORY DUMP:"
+for i in range(1024):
+	print '%02x' % memory[i],
+	if (i+1) % 32 == 0:
+		print
 
