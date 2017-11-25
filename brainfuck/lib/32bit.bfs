@@ -30,4 +30,22 @@ zero32(x)
 	? ~
 }
 
+#y = x; x = 0
+move32(x;y)
+{
+	move8(x    ;y    )
+	move8(x >  ;y >  )
+	move8(x >> ;y >> )
+	move8(x >>>;y >>>)
+}
+
+#y = x
+#temp0 can be 8-bit
+copy32(x;y;temp0)
+{
+	copy8 (x    ;y    ;temp0)
+	copy8F(x >  ;y >  ;temp0)
+	copy8F(x >> ;y >> ;temp0)
+	copy8F(x >>>;y >>>;temp0)
+}
 

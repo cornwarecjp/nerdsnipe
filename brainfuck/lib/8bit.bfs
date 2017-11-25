@@ -27,9 +27,14 @@ move8F(x;y)
 #y = x
 copy8(x;y;temp0)
 {
+	0(temp0)
+	copy8F(x;y;temp0)
+}
+#same, but requires zero-value temp0
+copy8F(x;y;temp0)
+{
 	!
 	? y     0()   #y = 0
-	? temp0 0()   #temp0 = 0
 	? x     [     #while x
 	? x     -     #    x--
 	? y     +     #    y++
