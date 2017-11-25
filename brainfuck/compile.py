@@ -1,4 +1,5 @@
 import cProfile
+from collections import deque
 import sys
 
 
@@ -10,17 +11,17 @@ isFinishedCode = lambda s: not s or s[0] not in '_{}();'
 
 class CodeBlock:
 	def __init__(self, code):
-		self.code = code[:]
+		self.code = deque(code)
 
 
 	def evaluateMacros(self):
 		macros = {}
 		oldCode = self.code
-		newCode = []
+		newCode = deque()
 
 		while True:
 			try:
-				e = oldCode.pop(0)
+				e = oldCode.popleft()
 			except IndexError:
 				break
 
@@ -29,11 +30,11 @@ class CodeBlock:
 				continue
 			#We found a code open
 
-			macroCode = []
+			macroCode = deque()
 			openCount = 1
 			while True:
 				try:
-					e = oldCode.pop(0)
+					e = oldCode.popleft()
 				except IndexError:
 					raise Exception('{ not matched with }')
 
@@ -46,13 +47,13 @@ class CodeBlock:
 
 				macroCode.append(e)
 
-			if newCode.pop(-1) != ')':
+			if newCode.pop() != ')':
 				raise Exception('Expected ) before {')
 
 			arguments = ''
 			while True:
 				try:
-					e = newCode.pop(-1)
+					e = newCode.pop()
 				except IndexError:
 					raise Exception('( before { not found')
 
@@ -62,7 +63,7 @@ class CodeBlock:
 				arguments = e + arguments
 			arguments = arguments.split(';')
 
-			name = newCode.pop(-1)
+			name = newCode.pop()
 
 			#print 'EXTRACTED MACRO ', name
 			#print '    MACRO ARGUMENTS: ', arguments
@@ -84,8 +85,8 @@ class CodeBlock:
 
 
 	def evaluate(self, namespace):
-		code = self.code[:]
-		newCode = []
+		code = deque(self.code)
+		newCode = deque()
 
 		#print 'EVALUATE ', code
 		#print '    NAMESPACE ', namespace.keys()
@@ -94,15 +95,16 @@ class CodeBlock:
 			#print '    APPEND ', newCode, l
 			#Merge finished code at start and end:
 			if newCode and l and isFinishedCode(newCode[-1]) and isFinishedCode(l[0]):
-				newCode[-1] += l[0]
-				newCode += l[1:]
+				l = deque(l)
+				newCode[-1] += l.popleft()
+				newCode.extend(l)
 			else:
 				#Add to newCode
-				newCode += l
+				newCode.extend(l)
 			#print '         = ', newCode
 
 		while code:
-			symbol = code.pop(0)
+			symbol = code.popleft()
 			if symbol not in namespace:
 				appendToList(newCode, [symbol])
 				continue
@@ -114,13 +116,13 @@ class CodeBlock:
 			if isinstance(obj, Macro):
 				#print '    Expanding macro ', symbol
 
-				if code.pop(0) != '(':
+				if code.popleft() != '(':
 					raise Exception('( in macro invocation not found')
 
 				argumentValues = [[]]
 				openCount = 1
 				while code:
-					symbol = code.pop(0)
+					symbol = code.popleft()
 					#print '    PROCESSING', symbol, openCount
 
 					if symbol == ')' and openCount == 1:
@@ -149,7 +151,7 @@ class CodeBlock:
 				macroCode = obj.evaluate(argumentValues)
 				appendToList(newCode, macroCode)
 
-			elif isinstance(obj, list):
+			elif isinstance(obj, deque):
 				#print '    Substituting symbol ', symbol, '=', obj
 				appendToList(newCode, obj)
 
