@@ -120,8 +120,23 @@ class CodeBlock:
 			else:
 				raise Exception('Unknown object type')
 
+		self.mergeCode(newCode)
 		return newCode
 
+
+	def mergeCode(self, code):
+		isCode = lambda s: len([c for c in s if c not in '<>+-[]!?~']) == 0
+
+		pos = 0
+		while pos < len(code)-1:
+			s1 = code[pos]
+			if isCode(s1):
+				s2 = code[pos+1]
+				if isCode(s2):
+					code[pos] = s1 + s2
+					del code[pos+1]
+					continue #continue without incrementing pos
+			pos += 1
 
 
 class Macro:
@@ -167,12 +182,14 @@ while True:
 	code = newCode
 code = code.split(' ')
 
+print code
+
 codeBlock = CodeBlock(code)
 codeBlock.evaluateMacros()
 code = codeBlock.evaluate({})
 code = ''.join(code)
 
-print code
+#print code
 
 #Evaluate save-and-recall:
 stack = []
