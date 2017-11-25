@@ -4,7 +4,7 @@ import sys
 
 maxMemory = 30000
 maxProgram = 1000000
-maxInstructions = 1000000
+maxInstructions = 1000000000
 
 
 
