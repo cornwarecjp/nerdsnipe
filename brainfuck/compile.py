@@ -2,8 +2,9 @@ import cProfile
 import sys
 
 
-
-isFinishedCode = lambda s: len([c for c in s if c not in '<>+-[]!?~']) == 0
+#Assumes all symbols are marked with an underscore,
+#and all other macro symbols are separate strings
+isFinishedCode = lambda s: len(s) == 0 or s[0] not in '_{}();'
 
 
 
@@ -201,6 +202,14 @@ while True:
 		break
 	code = newCode
 code = code.split(' ')
+
+#Mark every symbol with an underscore:
+isSymbol = lambda s: len([c for c in s if c not in '<>+-[]!?~{}();']) != 0
+code = \
+[
+'_' + s if isSymbol(s) else s
+for s in code
+]
 
 #print code
 
