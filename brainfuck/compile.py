@@ -1,4 +1,9 @@
+import cProfile
 import sys
+
+
+
+isFinishedCode = lambda s: len([c for c in s if c not in '<>+-[]!?~']) == 0
 
 
 
@@ -66,10 +71,17 @@ class CodeBlock:
 		code = self.code[:]
 		newCode = []
 
+		def appendToList(newCode, l):
+			#Merge finished code at start and end:
+			if len(newCode)>0 and len(l)>0 and isFinishedCode(newCode[-1]) and isFinishedCode(l):
+				newCode[-1] += l.pop(0)
+			#Add to newCode
+			newCode += l
+
 		while len(code) > 0:
 			symbol = code.pop(0)
 			if symbol not in namespace:
-				newCode.append(symbol)
+				appendToList(newCode, [symbol])
 				continue
 
 			obj = namespace[symbol]
@@ -112,31 +124,16 @@ class CodeBlock:
 				]
 
 				macroCode = obj.evaluate(argumentValues)
-				newCode += macroCode
+				appendToList(newCode, macroCode)
 
 			elif isinstance(obj, list):
-				newCode += obj
+				appendToList(newCode, obj)
 
 			else:
 				raise Exception('Unknown object type')
 
-		self.mergeCode(newCode)
 		return newCode
 
-
-	def mergeCode(self, code):
-		isCode = lambda s: len([c for c in s if c not in '<>+-[]!?~']) == 0
-
-		pos = 0
-		while pos < len(code)-1:
-			s1 = code[pos]
-			if isCode(s1):
-				s2 = code[pos+1]
-				if isCode(s2):
-					code[pos] = s1 + s2
-					del code[pos+1]
-					continue #continue without incrementing pos
-			pos += 1
 
 
 class Macro:
@@ -182,10 +179,11 @@ while True:
 	code = newCode
 code = code.split(' ')
 
-print code
+#print code
 
 codeBlock = CodeBlock(code)
-codeBlock.evaluateMacros()
+#codeBlock.evaluateMacros()
+cProfile.run('codeBlock.evaluateMacros()')
 code = codeBlock.evaluate({})
 code = ''.join(code)
 
