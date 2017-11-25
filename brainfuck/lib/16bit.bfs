@@ -1,0 +1,51 @@
+################################################################################
+
+const16(a;b;c;d;y)
+{
+	!
+	?   0() a *10(y) b
+	? > 0() c *10(< y) d
+	? ~
+}
+
+zero16()   {0()       > 0()       <}
+move16(y)  {move(y)   > move(y)   <}
+copy16(y;z){copy(y;z) > copy(y;z) <}
+write16()  {write()   > write()   <}
+
+#y = bool(x)
+#note: y is 8-bit
+bool16(x; y; temp0)
+{
+	or(x; x >; y; temp0; temp0 >)
+}
+
+decr16(temp0)
+{
+	lsb(){>}
+	msb(){}
+
+	ifelse(lsb();;        #if lsb == 0
+		-                 #    msb--
+		;temp0;temp0 >)
+
+	!
+	? lsb() -             #lsb--
+	? ~
+}
+
+
+incr16(temp0)
+{
+	lsb(){>}
+	msb(){}
+
+	!
+	? lsb() +            #lsb++
+	? ~
+
+	ifelse(lsb();;       #if lsb == 0
+		+                #msb++
+		;temp0;temp0 >)
+}
+

@@ -1,0 +1,146 @@
+Two solid cylindrical discs, of the same thickness, made of the same material.
+Each disc is attached to a rod that goes through its center. The discs can
+rotate without friction around the rods. The two rods are held fixed by an
+external frame, so the rods can not move with respect to each other. The discs
+touch each other on their outer rims; the friction coefficient of the contact
+between the discs is mu = 0.9106950312693548. Disc one has radius
+R1 = 93.65490673504131 cm and initial angular velocity omega1 = 1 rad/s. Disc
+two has radius R2 = 74.16411280509497 cm and initial angular velocity
+omega2 = 0 rad/s. Due to friction between the two discs, their angular
+velocities will change, until eventually the friction force becomes zero,
+and the angular velocities no longer change. What will be the final angular
+velocity of disc one?
+
+================================================================================
+Constant angular momentum
+
+m1 = R1^2
+m2 = R2^2
+
+I1 = m1*R1^2 = R1^4
+I2 = m2*R2^2 = R2^4
+
+Lb = I1 * w1b            = R1^4 * w1b
+Le = I1 * w1e - I2 * w2e = R1^4 * w1e - R2^4 * w2e [naive]
+
+w1e * R1 = -w2e * R2
+
+Le = Lb [naive]
+R1^4 * w1e - R2^4 * w2e = R1^4 * w1b
+R1^4 * w1e - R2^4 * [-w1e * R1/R2] = R1^4 * w1b
+w1e * [R1^4 + R2^4 * (R1/R2)] = R1^4 * w1b
+w1e = w1b * R1^4 / [R1^4 + R2^4 * (R1/R2)]
+    = w1b * R1^4 / [R1^4 + R2^3 * R1]
+    = w1b * R1^3 / [R1^3 + R2^3]
+    = 0.6681898409601859 [wrong]
+
+================================================================================
+Constant energy
+
+m1 = R1^2
+m2 = R2^2
+
+I1 = m1*R1^2 = R1^4
+I2 = m2*R2^2 = R2^4
+
+Eb = I1 * w1b^2              = R1^4 * w1b^2
+Ee = I1 * w1e^2 + I2 * w2e^2 = R1^4 * w1e^2 + R2^4 * w2e^2
+
+w1e * R1 = -w2e * R2
+
+Ee = Eb [naive]
+R1^4 * w1e^2 + R2^4 * [w1e * R1/R2]^2 = R1^4 * w1b^2
+[R1^4 + R2^4 * (R1/R2)^2] * w1e^2 = R1^4 * w1b^2
+[R1^4 + R2^2 * R1^2] * w1e = R1^4 * w1b^2
+w1e^2 = w1b^2 * R1^4 / [R1^4 + R2^2 * R1^2]
+      = w1b^2 * R1^2 / [R1^2 + R2^2]
+w1e = w1b * R1 / sqrt(R1^2 + R2^2)
+    = 0.7839617157352895 rad/s [wrong]
+
+================================================================================
+Correct
+
+m1 = R1^2
+m2 = R2^2
+
+I1 = m1*R1^2 = R1^4
+I2 = m2*R2^2 = R2^4
+
+dw1/dt = F * R1 / I1 = F / R1^3
+dw2/dt = F * R2 / I2 = F / R2^3
+
+dw1/dw2 = R2/R1^3
+
+w1e * R1 = -w2e * R2
+
+dw2 = w2e
+w1e = w1b + dw1
+    = w1b + dw2 * (R2/R1)^3
+    = w1b + w2e * (R2/R1)^3
+
+R1 * [w1b + w2e * (R2/R1)^3] = -w2e * R2
+R1 * w1b + w2e * R1*(R2/R1)^3 = -w2e * R2
+R1 * w1b = -w2e * [R1*(R2/R1)^3 + R2]
+w2e = -R1 * w1b / [R1*(R2/R1)^3 + R2]
+    = -w1b / [(R2/R1)^3 + R2/R1]
+
+w1e = -w2e * R2 / R1
+    = -{-w1b / [(R2/R1)^3 + R2/R1]} * R2 / R1
+    = w1b / [(R2/R1)^2 + 1]
+    = w1b * R1^2 / (R1^2 + R2^2)
+
+    = 0.6145959717386188 rad/s
+
+Notes:
+Ee = R1^4 * w1e^2 + R2^4 * w2e^2
+   = R1^4 * [w1b * R1^2 / (R1^2 + R2^2)]^2 + R2^4 * [-w1b / [(R2/R1)^3 + R2/R1]]^2
+   = w1b^2 * {R1^4 * [R1^2 / (R1^2 + R2^2)]^2 + R2^4 * [-1 / [(R2/R1)^3 + R2/R1]]^2}
+   = w1b^2 * {R1^8 / (R1^2 + R2^2)^2 + R2^4 / [(R2/R1)^3 + R2/R1]^2}
+   = w1b^2 * {R1^8 / (R1^2 + R2^2)^2 + R1^6 * R2^2 / [R2^2 + R1^2]^2}
+   = w1b^2 * R1^6 * {R1^2 / (R1^2 + R2^2)^2 + R2^2 / [R2^2 + R1^2]^2}
+   = w1b^2 * R1^6 * {R1^2 + R2^2} / [R2^2 + R1^2]^2
+   = w1b^2 * R1^6 / [R1^2 + R2^2]
+   = Eb * R1^2 / [R1^2 + R2^2] < Eb
+
+Le = R1^4 * w1e - R2^4 * w2e
+   = R1^4 * [w1b * R1^2 / (R1^2 + R2^2)] - R2^4 * [-w1b / [(R2/R1)^3 + R2/R1]]
+   = w1b * {R1^4 * [R1^2 / (R1^2 + R2^2)] - R2^4 * [-1 / [(R2/R1)^3 + R2/R1]]}
+   = w1b * {R1^6 / (R1^2 + R2^2) + R2^4 / [(R2/R1)^3 + R2/R1]}
+   = w1b * {R1^6 / (R1^2 + R2^2) + R1^3 * R2^4 / [R2^3 + R1^2 * R2]}
+   = w1b * {R1^6 / (R1^2 + R2^2) + R1^3 * R2^3 / [R2^2 + R1^2]}
+   = w1b * {R1^6 + R1^3 * R2^3} / [R2^2 + R1^2]
+   = w1b * R1^4 * [R1^2 + R2^3 / R1] / [R2^2 + R1^2]
+   = Lb * [R1^2 + R2^3 / R1] / [R2^2 + R1^2]
+   = Lb * [R1^2 + R2^2 * (R2/R1)] / [R2^2 + R1^2]
+   = Lb iff R1 = R2
+
+================================================================================
+Correct 2
+
+I1 = R1^4
+I2 = R2^4
+
+|dw1| = |F| * R1 / I1 = |F| / R1^3
+|dw2| = |F| * R2 / I2 = |F| / R2^3
+      = |dw1| * (R1/R2)^3
+
+|w1e| * R1 = |w2e| * R2
+(|w1b| - |dw1|) * R1 = |dw2| * R2
+(|w1b| - |dw1|) * R1 = [|dw1| * (R1/R2)^3] * R2
+|w1b| * R1 - |dw1| * R1 = |dw1| * R2 * (R1/R2)^3
+|w1b| * R1 = |dw1| * [R2 * (R1/R2)^3 + R1]
+|w1b| = |dw1| * [R1^2 / R2^2 + 1]
+|dw1| = |w1b| / [R1^2 / R2^2 + 1]
+      = |w1b| * R2^2 / [R1^2 + R2^2]
+
+|w1e| = |w1b| - |dw1|
+      = |w1b| * {1 - R2^2 / [R1^2 + R2^2]}
+      = |w1b| * {[R1^2 + R2^2 - R2^2] / [R1^2 + R2^2]}
+      = |w1b| * R1^2 / [R1^2 + R2^2]
+
+      = 0.6145959717386188 rad/s
+
+
+================================================================================
+================================================================================
+

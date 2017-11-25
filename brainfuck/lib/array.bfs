@@ -1,0 +1,51 @@
+################################################################################
+
+#x(y) = z
+arrayStore8(x;y;z)
+{
+	space(){x}
+	i1()   {x >}
+	i2()   {x >>}
+	data() {x >>>}
+
+	copy8(z;data();space())
+	copy8(y;i1()  ;space())
+	copy8(y;i2()  ;space())
+
+	! # Remember current position
+
+	#Starting at space() = 0
+	space() 0()
+
+	! # Stack push to protect against weird behavior below
+
+		move(t) {move8F(;t)}
+
+		#Move the head to the right to the correct index:
+		>    [          #while i1
+		>>>  move(<<<<) #    storedRight -> space
+		<    move(>)    #    data -> storedRight
+		<    move(>)    #    i2 -> data
+		<    move(>)    #    i1 -> i2
+		>    -          #    i2--
+			 ]          #    (i2 is now the new i1)
+
+		#i1 is now 0
+
+		#Write data:
+		>>>  0()        #storedRight = 0
+		<    move(>)    #data -> storedRight
+
+		#Move back to the start:
+		<    [          #while i2
+			 move(<)    #    i2 -> i1
+		<<<  move(>>>>) #    storedLeft -> data
+		>>   -          #    i1--
+			 ]          #    (i1 is now the new i2)
+
+		<<              #back to space
+
+	~ # Stack pop of weird behavior
+	?~ # Restore old position (only the move to space is compensated)
+}
+
