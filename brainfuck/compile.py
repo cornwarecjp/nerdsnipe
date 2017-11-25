@@ -4,7 +4,7 @@ import sys
 
 #Assumes all symbols are marked with an underscore,
 #and all other macro symbols are separate strings
-isFinishedCode = lambda s: len(s) == 0 or s[0] not in '_{}();'
+isFinishedCode = lambda s: not s or s[0] not in '_{}();'
 
 
 
@@ -93,7 +93,7 @@ class CodeBlock:
 		def appendToList(newCode, l):
 			#print '    APPEND ', newCode, l
 			#Merge finished code at start and end:
-			if len(newCode)>0 and len(l)>0 and isFinishedCode(newCode[-1]) and isFinishedCode(l[0]):
+			if newCode and l and isFinishedCode(newCode[-1]) and isFinishedCode(l[0]):
 				newCode[-1] += l[0]
 				newCode += l[1:]
 			else:
@@ -101,7 +101,7 @@ class CodeBlock:
 				newCode += l
 			#print '         = ', newCode
 
-		while len(code) > 0:
+		while code:
 			symbol = code.pop(0)
 			if symbol not in namespace:
 				appendToList(newCode, [symbol])
@@ -119,7 +119,7 @@ class CodeBlock:
 
 				argumentValues = [[]]
 				openCount = 1
-				while len(code) > 0:
+				while code:
 					symbol = code.pop(0)
 					#print '    PROCESSING', symbol, openCount
 
