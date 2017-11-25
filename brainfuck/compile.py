@@ -14,51 +14,64 @@ class CodeBlock:
 
 	def evaluateMacros(self):
 		macros = {}
+		oldCode = self.code
+		newCode = []
 
 		while True:
-			#print 'CODE:', self.code
-
 			try:
-				codeStartPos = self.code.index('{')
-			except ValueError:
+				e = oldCode.pop(0)
+			except IndexError:
 				break
+
+			if e != '{':
+				newCode.append(e)
+				continue
+			#We found a code open
+
+			macroCode = []
 			openCount = 1
-			codeEndPos = None
-			for i in range(codeStartPos+1, len(self.code)):
-				if self.code[i] == '{':
+			while True:
+				try:
+					e = oldCode.pop(0)
+				except IndexError:
+					raise Exception('{ not matched with }')
+
+				if e == '{':
 					openCount += 1
-				elif self.code[i] == '}':
+				elif e == '}':
 					openCount -= 1
 					if openCount == 0:
-						codeEndPos = i
 						break
-			if codeEndPos is None:
-				raise Exception('{ not matched with }')
 
-			if self.code[codeStartPos-1] != ')':
+				macroCode.append(e)
+
+			if newCode.pop(-1) != ')':
 				raise Exception('Expected ) before {')
 
-			argumentsStartPos = None
-			i = codeStartPos-1
-			while i > 1:
-				i -= 1
-				if self.code[i] == '(':
-					argumentsStartPos = i
-					break
-			if argumentsStartPos is None:
-				raise Exception('( before { not found')
+			arguments = ''
+			while True:
+				try:
+					e = newCode.pop(-1)
+				except IndexError:
+					raise Exception('( before { not found')
 
-			name = self.code[argumentsStartPos-1]
-			arguments = self.code[argumentsStartPos+1:codeStartPos-1]
-			arguments = ''.join(arguments)
+				if e == '(':
+					break
+
+				arguments = e + arguments
 			arguments = arguments.split(';')
-			code = self.code[codeStartPos+1:codeEndPos]
-			macros[name] = Macro(code, arguments)
+
+			name = newCode.pop(-1)
 
 			#print 'EXTRACTED MACRO ', name
-			#print '    MACRO CODE: ', code
+			#print '    MACRO ARGUMENTS: ', arguments
+			#print '    MACRO CODE: ', macroCode
 
-			self.code = self.code[:argumentsStartPos-1] + self.code[codeEndPos+1:]
+			macros[name] = Macro(macroCode, arguments)
+
+		self.code = newCode
+
+		#print 'CODE WITHOUT MACROS(1) ', self.code
 
 		while True:
 			newCode = self.evaluate(macros)
@@ -66,17 +79,26 @@ class CodeBlock:
 				break
 			self.code = newCode
 
+		#print 'CODE WITHOUT MACROS(2) ', self.code
+
 
 	def evaluate(self, namespace):
 		code = self.code[:]
 		newCode = []
 
+		#print 'EVALUATE ', code
+		#print '    NAMESPACE ', namespace.keys()
+
 		def appendToList(newCode, l):
+			#print '    APPEND ', newCode, l
 			#Merge finished code at start and end:
-			if len(newCode)>0 and len(l)>0 and isFinishedCode(newCode[-1]) and isFinishedCode(l):
-				newCode[-1] += l.pop(0)
-			#Add to newCode
-			newCode += l
+			if len(newCode)>0 and len(l)>0 and isFinishedCode(newCode[-1]) and isFinishedCode(l[0]):
+				newCode[-1] += l[0]
+				newCode += l[1:]
+			else:
+				#Add to newCode
+				newCode += l
+			#print '         = ', newCode
 
 		while len(code) > 0:
 			symbol = code.pop(0)
@@ -89,7 +111,7 @@ class CodeBlock:
 			#print 'CODE: ', code
 
 			if isinstance(obj, Macro):
-				#print 'Expanding macro ', symbol
+				#print '    Expanding macro ', symbol
 
 				if code.pop(0) != '(':
 					raise Exception('( in macro invocation not found')
@@ -127,6 +149,7 @@ class CodeBlock:
 				appendToList(newCode, macroCode)
 
 			elif isinstance(obj, list):
+				#print '    Substituting symbol ', symbol, '=', obj
 				appendToList(newCode, obj)
 
 			else:
