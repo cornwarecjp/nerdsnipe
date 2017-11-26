@@ -7,7 +7,12 @@ read8(x)
 	?~
 }
 
-write(){.}
+write8(x)
+{
+	!
+	? x .
+	?~
+}
 
 #x = 0
 0(x){! x [-] ?~}
@@ -94,4 +99,51 @@ const8(x;a;b;temp0)
 	?~
 }
 
+#y -= x
+st8(y;x;temp0)
+{
+	!
+	? temp0 0()   #temp0 = 0
+	? x     [     #while x
+	? x     -     #    x--
+	? y     -     #    y--
+	? temp0 +     #    temp0++
+	? x     ]
+	? temp0 [     #while temp0
+	? temp0 -     #    temp0--
+	? x     +     #    x++
+	? temp0 ]
+	? ~
+}
+
+#z = y - x
+subtract8(z;y;x;temp0)
+{
+	copy8(y;z;temp0)
+	st8(z;x;temp0)
+}
+
+#y += x
+ad8(y;x;temp0)
+{
+	!
+	? temp0 0()   #temp0 = 0
+	? x     [     #while x
+	? x     -     #    x--
+	? y     +     #    y++
+	? temp0 +     #    temp0++
+	? x     ]
+	? temp0 [     #while temp0
+	? temp0 -     #    temp0--
+	? x     +     #    x++
+	? temp0 ]
+	? ~
+}
+
+#z = y + x
+add8(z;y;x;temp0)
+{
+	copy8(y;z;temp0)
+	ad8(z;x;temp0)
+}
 

@@ -181,3 +181,41 @@ append()
 append()
 appendConst(+0(); +0(); +0(); +0(); +0(); +1(); +0(); +0())
 
+
+#Extend the first 16 words into the remaining 48 words w[16..63] of the message schedule array:
+
+const8(stack1()    ;+0();+3();stack3()) #stack1[0] = 3
+const8(stack1() >  ;+0();+7();stack3()) #stack1[1] = 7
+const8(stack1() >> ;+1();+2();stack3()) #stack1[2] = 18
+const8(stack1() >>>;+1();+1();stack3()) #stack1[3] = 17
+const8(stack2()    ;+1();+3();stack3()) #stack2[0] = 19
+const8(stack2() >  ;+0();+8();stack3()) #stack2[1] = 8
+const8(stack2() >> ;+4();+0();stack3()) #stack2[2] = 64
+w0    (stack2() >>>;          stack3()) #stack2[3] = w
+
+#for i from 16 to 63
+const8(stack0();+3();+0();stack3()) #stack0[0] = 64 - i
+while(stack0();
+	subtract8(stack0() >;stack2() >>; stack0(); stack0() >>>) #stack0[1] = i
+	#write8(stack0() >)
+	ad8(stack0() >; stack2() >>>; stack3())                   #stack0[1] = w+i
+
+	#s0 := (w[i-15] rightrotate 7) xor (w[i-15] rightrotate 18) xor (w[i-15] rightshift 3)
+	copy8(stack0() >; stack0() >>; stack0() >>>)
+	! stack0() >> --------------- ?~         #stack0[2] = w+i-15
+
+	arrayRetrieve32(stack3();A();stack0() >>)
+	write32(stack3())
+	#TODO
+
+	#s1 := (w[i-2] rightrotate 17) xor (w[i-2] rightrotate 19) xor (w[i-2] rightshift 10)
+	copy8(stack0() >; stack0() >>; stack0() >>>)
+	! stack0() >> -- ?~                      #stack0[2] = w+i-2
+	#TODO
+
+	#w[i] := w[i-16] + s0 + w[i-7] + s1
+	#TODO
+
+	!? stack0() - ?~
+	)
+

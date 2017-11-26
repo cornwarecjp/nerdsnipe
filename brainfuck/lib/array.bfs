@@ -50,6 +50,54 @@ arrayStore8(x;y;z)
 }
 
 
+#x = y(z)
+arrayRetrieve8(x;y;z)
+{
+	space(){y}
+	i1()   {y >}
+	i2()   {y >>}
+	data() {y >>>}
+
+	copy8(z;i1()  ;space())
+	copy8(z;i2()  ;space())
+
+	! # Remember current position
+
+	#Starting at space() = 0
+	space() 0()
+
+	! # Stack push to protect against weird behavior below
+
+		move(t) {move8F(;t)}
+
+		>   [          #while i1
+		>>> move(<<<<) #    storedRight -> space
+		<<  move(>)    #    i2 -> data
+		<   move(>)    #    i1 -> i2
+		>    -         #    i2--
+			 ]         #    (i2 is now the new i1)
+
+		#i1 is now 0
+
+		>>> [-<+<<+>>>] #move storedRight to data, i1
+		<<< [->>>+<<<]  #move i1 to storedRight
+
+		>    [            #while i2
+		     move(<)      #    i2 -> i1
+		>    move(<)      #    data -> i2
+		<<<< move(>>>>)   #    storedLeft -> data
+		>>   -            #    i1--
+		     ]            #    (i1 is now the new i2)
+
+		<<              #back to space
+
+	~ # Stack pop of weird behavior
+	?~ # Restore old position (only the move to space is compensated)
+
+	move8(data();x)
+}
+
+
 #x(y) = z
 #y = 8-bit, z = 32-bit
 arrayStore32(x;y;z)
@@ -126,5 +174,88 @@ arrayStore32(x;y;z)
 
 	~ # Stack pop of weird behavior
 	?~ # Restore old position (only the move to space is compensated)
+}
+
+
+#x = y(z)
+#x = 32-bit, z = 8-bit
+arrayRetrieve32(x;y;z)
+{
+	space(){y}
+	i1()   {y >}
+	i2()   {y >>}
+	data() {y >>>}
+
+	copy8(z;i1()  ;space())
+	copy8(z;i2()  ;space())
+
+	! # Remember current position
+
+	#Starting at space() = 0
+	space() 0()
+
+	! # Stack push to protect against weird behavior below
+
+		move(t) {move8F(;t)}
+
+		headRight()
+		{
+			#xxxx0II0000yyyy
+			#     ^
+			>>>>>>  move(<<<<<<<) #    storedRight -> space
+			<<<<<   move(>)       #    i2      ->
+			<       move(>)       #    i1      ->
+			>
+			#xxxxy0IIDDDDyyy
+			#      ^
+		}
+
+		headLeft()
+		{
+			#xxxx00IDDDDyyyy
+			#      ^
+			        move(<)       #    i2 <-
+			>       move(<)       #    data[0] <-
+			>       move(<)       #    data[1] <-
+			>       move(<)       #    data[2] <-
+			>       move(<)       #    data[3] <-
+			<<<<<<< move(>>>>>>>) #    storedLeft -> data[3]
+			>>
+			#xxx00I0000xyyyy
+			#     ^
+		}
+
+		#Move the head to the right to the correct index:
+		>    [           #while i1
+		     headRight() #    headRight()
+		     headRight() #    headRight()
+		     headRight() #    headRight()
+		     headRight() #    headRight()
+		     -           #    i1--
+			 ]           #
+
+		#we are now at i1 = 0
+
+		#Read data:
+		copy8F(>> >>>>    ; >>    ; <)
+		copy8F(>> >>>> >  ; >> >  ; <)
+		copy8F(>> >>>> >> ; >> >> ; <)
+		copy8F(>> >>>> >>>; >> >>>; <)
+
+		#Move back to the start:
+		>    [          #while i2
+		     headLeft() #    headLeft()
+		     headLeft() #    headLeft()
+		     headLeft() #    headLeft()
+		     headLeft() #    headLeft()
+		     -          #    i2--
+			 ]          #
+
+		<<              #back to space
+
+	~ # Stack pop of weird behavior
+	?~ # Restore old position (only the move to space is compensated)
+
+	move32(data();x)
 }
 

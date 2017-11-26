@@ -1,6 +1,6 @@
 all: test
 
-SOURCES = lib/bool.bfs lib/8bit.bfs lib/16bit.bfs lib/32bit.bfs lib/array.bfs prototype.bfs
+SOURCES = lib/bool.bfs lib/control.bfs lib/8bit.bfs lib/16bit.bfs lib/32bit.bfs lib/array.bfs prototype.bfs
 #SOURCES = prototype.bfs
 
 test: test.py prototype.bf

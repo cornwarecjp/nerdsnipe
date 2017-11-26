@@ -7,6 +7,13 @@ read32(x)
 	?~
 }
 
+write32(x)
+{
+	!
+	? x .>.>.>.
+	?~
+}
+
 const32(x;a;b;c;d;e;f;g;h;temp0)
 {
 	!
