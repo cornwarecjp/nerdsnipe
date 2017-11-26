@@ -1,5 +1,6 @@
 from collections import defaultdict
 import sys
+import hashlib
 
 
 
@@ -9,7 +10,9 @@ maxInstructions = 1000000000
 
 
 
-inputData = raw_input('Input: ')
+inputData = '\xfe'*32 #256-bit input data
+expectedOutputData = hashlib.sha256(inputData).digest()
+
 memory = [0]*maxMemory
 pointers = [0,0] #progPtr, memPtr
 
