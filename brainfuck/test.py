@@ -1,3 +1,4 @@
+from collections import defaultdict
 import sys
 
 
@@ -13,18 +14,22 @@ memory = [0]*maxMemory
 pointers = [0,0] #progPtr, memPtr
 
 
-def changeValueFunction(increment):
-	def f():
+class changeValueFunction:
+	def __init__(self, increment):
+		self.increment = increment
+
+	def __call__(self):
 		#print 'changeValue', increment
-		memory[pointers[1]] += increment
-	return f
+		memory[pointers[1]] = (memory[pointers[1]] + self.increment) % 256
 
 
-def changePointerFunction(increment):
-	def f():
+class changePointerFunction:
+	def __init__(self, increment):
+		self.increment = increment
+
+	def __call__(self):
 		#print 'changepointer', increment
-		pointers[1] += increment
-	return f
+		pointers[1] = (pointers[1] + self.increment) % maxMemory
 
 
 def writeOutputFunction():
@@ -59,16 +64,28 @@ def jumpBackwardFunction(p):
 	return f
 
 
+class moveValueFunction:
+	def __init__(self, increments):
+		self.increments = increments
+
+	def __call__(self):
+		sourceValue = memory[pointers[1]]
+		memory[pointers[1]] = 0
+		for offset, multiplier in self.increments.iteritems():
+			address = (pointers[1] + offset) % maxMemory
+			increment = multiplier * sourceValue
+			memory[address] = (memory[address] + increment) % 256
+
+
 #Load file
 progFile = sys.argv[1]
 with open(progFile, 'rb') as f:
 	program = f.read()
 if len(program) > maxProgram:
 	raise Exception('Maximum program size exceeded')
-
-
-
 program = list(program)
+
+
 def convertToFunctions(program):
 	newProgram = []
 	while program:
@@ -99,6 +116,58 @@ def convertToFunctions(program):
 
 	return newProgram
 program = convertToFunctions(program)
+
+
+def detectValueMoves(program):
+	newProgram = []
+
+	while program:
+		c = program.pop(0)
+
+		if c != '[':
+			newProgram.append(c)
+			continue
+
+		codeInLoop = []
+		isValueMove = False
+		while True:
+			c = program.pop(0)
+			if isinstance(c, changeValueFunction) or isinstance(c, changePointerFunction):
+				codeInLoop.append(c)
+			elif c == ']':
+				isValueMove = True
+				break
+			elif c == '[':
+				newProgram += ['['] + codeInLoop
+				codeInLoop = []
+			else:
+				newProgram += ['['] + codeInLoop + [c]
+				codeInLoop = []
+				isValueMove = False
+				break
+
+		if not isValueMove:
+			continue
+
+		increments = defaultdict(lambda: 0)
+		offset = 0
+		for c in codeInLoop:
+			if isinstance(c, changePointerFunction):
+				offset += c.increment
+			elif isinstance(c, changeValueFunction):
+				increments[offset] += c.increment
+
+		if offset != 0 or increments[0] != -1:
+			#It's not a value move after all
+			newProgram += ['['] + codeInLoop + [']']
+			continue
+
+		del increments[0]
+		newProgram.append(moveValueFunction(increments))
+
+	return newProgram
+program = detectValueMoves(program)
+
 
 maxProgram = len(program)
 
