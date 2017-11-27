@@ -88,7 +88,7 @@ shr32(x;c;temp0;temp1;temp2;temp3)
 	addCarry(temp3;x >  )
 }
 
-#x r= 1; c=carry
+#x rr= 1; c=carry
 #c is 8-bit
 #temp0;temp1;temp2;temp3;temp4 can be 8-bit
 rr32(x;temp0;temp1;temp2;temp3;temp4)
@@ -112,5 +112,33 @@ rr32(x;temp0;temp1;temp2;temp3;temp4)
 	shr8(x    ;temp3;temp0;temp1;temp2)
 	addCarry(temp3;x >  )
 	addCarry(temp4;x    )
+}
+
+
+#z = x >> y
+#y is 8-bit
+#tempx can be 8-bit
+rightshift32(z;x;y;temp0;temp1;temp2;temp3;temp4;temp5)
+{
+	copy32(x;z;temp0)
+	copy8(y;temp5;temp0)
+	while(temp5;
+		shr32(z;temp0;temp1;temp2;temp3;temp4)
+		decr8(temp5)
+		)
+}
+
+
+#z = x rr y
+#y is 8-bit
+#tempx can be 8-bit
+rightrotate32(z;x;y;temp0;temp1;temp2;temp3;temp4;temp5)
+{
+	copy32(x;z;temp0)
+	copy8(y;temp5;temp0)
+	while(temp5;
+		rr32(z;temp0;temp1;temp2;temp3;temp4)
+		decr8(temp5)
+		)
 }
 
