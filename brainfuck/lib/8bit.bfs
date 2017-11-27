@@ -168,13 +168,8 @@ xor8(z;x;y;temp0;temp1;temp2;temp3;temp4;temp5;temp6;temp7)
 	? while(temp7;     #while temp7|
 	?     decr8(temp7) #    temp7--|
 
-	?     write8(temp7)
-
 	?     shr8(temp0;temp2;temp4;temp5;temp6) #temp0 /= 2; temp2 = carry
 	?     shr8(temp1;temp3;temp4;temp5;temp6) #temp1 /= 2; temp3 = carry
-
-	?     write8(temp2)
-	?     write8(temp3)
 
 	?     zero8(temp4) #    temp4 = 0        |one bit xor
 	?     temp3 [      #    if temp3         |
@@ -189,8 +184,6 @@ xor8(z;x;y;temp0;temp1;temp2;temp3;temp4;temp5;temp6;temp7)
 	?     temp2 -      #        temp2 = 0    |
 	?     temp4 +      #        temp4 = 1    |
 	?     temp2 ]      #                     |
-
-	?     write8(temp4)
 
 	?     shr8(z;temp2;temp3;temp5;temp6) #z /= 2
 
