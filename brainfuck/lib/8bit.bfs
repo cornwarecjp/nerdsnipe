@@ -150,7 +150,7 @@ add8(z;y;x;temp0)
 #x >>= 1; c=carry
 shr8(x;c;temp0;temp1;temp2)
 {
-	copy8(x;temp0;temp1)              #temp0 = x
+	copy8(x;temp0;temp1)              #temp0 = x; temp1 = 0
 	zero8(c)                          #c = 0
 	zero8(temp2)                      #temp2 = 0
 
