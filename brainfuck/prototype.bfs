@@ -43,8 +43,11 @@ stack0(){h() >1()}
 stack1(){stack0() >1()}
 stack2(){stack1() >1()}
 stack3(){stack2() >1()}
+stack4(){stack3() >1()}
+stack5(){stack4() >1()}
+stack6(){stack5() >1()}
 
-A(){stack3() >1()}
+A(){stack6() >1()}
 #Actual data in A starts 7 bytes later
 
 #In A:
@@ -189,7 +192,7 @@ const8(stack1() >  ;+0();+7();stack3()) #stack1[1] = 7
 const8(stack1() >> ;+1();+2();stack3()) #stack1[2] = 18
 const8(stack1() >>>;+1();+1();stack3()) #stack1[3] = 17
 const8(stack2()    ;+1();+3();stack3()) #stack2[0] = 19
-const8(stack2() >  ;+0();+8();stack3()) #stack2[1] = 8
+const8(stack2() >  ;+0();+a();stack3()) #stack2[1] = 10
 const8(stack2() >> ;+4();+0();stack3()) #stack2[2] = 64
 w0    (stack2() >>>;          stack3()) #stack2[3] = w
 
@@ -202,16 +205,33 @@ while(stack0();
 
 	#s0 := (w[i-15] rightrotate 7) xor (w[i-15] rightrotate 18) xor (w[i-15] rightshift 3)
 	copy8(stack0() >; stack0() >>; stack0() >>>)
-	! stack0() >> --------------- ?~         #stack0[2] = w+i-15
-
-	arrayRetrieve32(stack3();A();stack0() >>)
-	write32(stack3())
-	#TODO
+	! stack0() >> --------------- ?~             #stack0[2] = w+i-15
+	arrayRetrieve32(stack3();A();stack0() >>)    #stack3 = w[i-15]
+	rightshift32(s0();stack3();stack1();         #s0 = (w[i-15] rightshift 3)
+		stack5();stack5() >;stack5() >>;stack5() >>>;stack6();stack6() >)
+	rightrotate32(stack4();stack3();stack1() >>; #stack4 = (w[i-15] rightrotate 18)
+		stack5();stack5() >;stack5() >>;stack5() >>>;stack6();stack6() >)
+	xor32(s0();s0();stack4();                    # s0 ^= (w[i-15] rightrotate 18)
+		stack5();stack5() >;stack5() >>;stack5() >>>;stack6();stack6() >;stack6() >>;stack6() >>>)
+	rightrotate32(stack4();stack3();stack1() >; #stack4 = (w[i-15] rightrotate 7)
+		stack5();stack5() >;stack5() >>;stack5() >>>;stack6();stack6() >)
+	xor32(s0();s0();stack4();                    # s0 ^= (w[i-15] rightrotate 7)
+		stack5();stack5() >;stack5() >>;stack5() >>>;stack6();stack6() >;stack6() >>;stack6() >>>)
 
 	#s1 := (w[i-2] rightrotate 17) xor (w[i-2] rightrotate 19) xor (w[i-2] rightshift 10)
 	copy8(stack0() >; stack0() >>; stack0() >>>)
-	! stack0() >> -- ?~                      #stack0[2] = w+i-2
-	#TODO
+	! stack0() >> -- ?~                       #stack0[2] = w+i-2
+	arrayRetrieve32(stack3();A();stack0() >>) #stack3 = w[i-2]
+	rightshift32(s1();stack3();stack2() >;       #s1 = (w[i-2] rightshift 10)
+		stack5();stack5() >;stack5() >>;stack5() >>>;stack6();stack6() >)
+	rightrotate32(stack4();stack3();stack2(); #stack4 = (w[i-2] rightrotate 19)
+		stack5();stack5() >;stack5() >>;stack5() >>>;stack6();stack6() >)
+	xor32(s1();s1();stack4();                    # s1 ^= (w[i-2] rightrotate 19)
+		stack5();stack5() >;stack5() >>;stack5() >>>;stack6();stack6() >;stack6() >>;stack6() >>>)
+	rightrotate32(stack4();stack3();stack1() >>>;#stack4 = (w[i-2] rightrotate 17)
+		stack5();stack5() >;stack5() >>;stack5() >>>;stack6();stack6() >)
+	xor32(s1();s1();stack4();                    # s1 ^= (w[i-2] rightrotate 17)
+		stack5();stack5() >;stack5() >>;stack5() >>>;stack6();stack6() >;stack6() >>;stack6() >>>)
 
 	#w[i] := w[i-16] + s0 + w[i-7] + s1
 	#TODO
