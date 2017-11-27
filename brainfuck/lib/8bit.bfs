@@ -147,3 +147,34 @@ add8(z;y;x;temp0)
 	ad8(z;x;temp0)
 }
 
+#x >>= 1; c=carry
+shr8(x;c;temp0;temp1;temp2)
+{
+	copy8(x;temp0;temp1)              #temp0 = x
+	zero8(c)                          #c = 0
+	zero8(temp2)                      #temp2 = 0
+
+	!
+	? temp0 [                         #while temp0:
+
+	? c     zero8() +                 #    c = 1        |c = temp0==1
+	?       copy8F(temp0;temp1;temp2) #    temp1 = temp0|
+	? temp1 -                         #    temp1--      |
+	? temp1 [                         #    if temp1:    |
+	?       zero8(c)                  #        c = 0    |
+	?       zero8(temp1)              #                 |
+	? temp1 ]                         #                 |
+
+	? x     -                         #    x--
+	? temp0 --                        #    temp0 -= 2
+
+	?       copy8F(c;temp1;temp2)     #    temp1 = c    |if c:
+	? temp1 [                         #    if temp1:    |    temp0 = 0
+	?       zero8(temp0)              #        temp0 = 0|
+	? temp1 -                         #                 |
+	? temp1 ]                         #                 |
+
+	? temp0 ]
+	?~
+}
+
