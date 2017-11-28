@@ -63,6 +63,34 @@ copy32(x;y;temp0)
 	copy8F(x >>>;y >>>;temp0)
 }
 
+#y += x
+#tempx can be 8-bit
+ad32(y;x;temp0;temp1;temp2;temp3;temp4)
+{
+	combineCarry()
+	{
+		!
+		? temp1 [     #if temp1
+		? temp0 0() + #    temp0 = 1
+		? temp1 -     #    temp1 = 0
+		? temp1 ]     #
+		?~
+	}
+
+	adc8(y >>>;x >>>;temp0;temp2;temp3;temp4) #temp0 = cout
+
+	adc8(y >> ;temp0;temp1;temp2;temp3;temp4) #temp0 = cin, temp1 = cout
+	adc8(y >> ;x >> ;temp0;temp2;temp3;temp4) #temp0 = cout
+	combineCarry()
+
+	adc8(y >  ;temp0;temp1;temp2;temp3;temp4) #temp0 = cin, temp1 = cout
+	adc8(y >  ;x >  ;temp0;temp2;temp3;temp4) #temp0 = cout
+	combineCarry()
+
+	adc8(y    ;temp0;temp1;temp2;temp3;temp4) #temp0 = cin, temp1 = cout
+	adc8(y    ;x    ;temp0;temp2;temp3;temp4) #temp0 = cout
+}
+
 #z = x ^ y
 #z may be x or y
 #tempx can be 8-bit

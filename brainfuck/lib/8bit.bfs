@@ -140,11 +140,37 @@ ad8(y;x;temp0)
 	? y     +     #    y++
 	? temp0 +     #    temp0++
 	? x     ]
-	? temp0 [     #while temp0
-	? temp0 -     #    temp0--
-	? x     +     #    x++
-	? temp0 ]
 	? ~
+	move8F(temp0;x)
+}
+
+#y += x; c = carry
+adc8(y;x;c;temp0;temp1;temp2)
+{
+	0(c)     #c = 0
+	0(temp0) #temp0 = 0
+	0(temp1) #temp1 = 0
+	0(temp2) #temp2 = 0
+
+	!
+	? x     [                     #while x
+	? x     -                     #    x--
+	? temp0 +                     #    temp0++
+	? y     +                     #    y++
+	?       copy8F(y;temp1;temp2) #    temp1 = y    |temp2 = (y == 0)
+	? temp2 +                     #    temp2 = 1    |
+	? temp1 [                     #    if temp1     |
+	? temp2 -                     #        temp2 = 0|
+	? temp1 0()                   #                 |
+	? temp1 ]                     #                 |
+	? temp2 [                     #    if temp2
+	? c     +                     #        c = 1
+	? temp2 -                     #
+	? temp2 ]                     #
+	? x     ]                     #
+	?~
+
+	move8F(temp0;x)
 }
 
 #z = y + x
