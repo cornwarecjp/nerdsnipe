@@ -251,3 +251,61 @@ while(stack0();
 	!? stack0() - ?~
 	)
 
+#Initialize working variables to current hash value:
+copy32(h0(); a(); stack0())
+copy32(h1(); b(); stack0())
+copy32(h2(); c(); stack0())
+copy32(h3(); d(); stack0())
+copy32(h4(); e(); stack0())
+copy32(h5(); f(); stack0())
+copy32(h6(); g(); stack0())
+copy32(h7(); h(); stack0())
+
+
+#    Compression function main loop:
+
+const8(stack1()    ;+4();+0();stack3()) #stack1[0] = 64
+const8(stack1() >  ;+0();+6();stack3()) #stack1[1] = 6
+const8(stack1() >> ;+0();+b();stack3()) #stack1[2] = 11
+const8(stack1() >>>;+1();+9();stack3()) #stack1[3] = 25
+const8(stack2()    ;+0();+2();stack3()) #stack2[0] = 2
+const8(stack2() >  ;+0();+d();stack3()) #stack2[1] = 13
+const8(stack2() >> ;+1();+6();stack3()) #stack2[2] = 22
+
+#    for i from 0 to 63
+const8(stack0();+3();+0();stack3()) #stack0[0] = 64 - i
+while(stack0();
+	subtract8(stack0() >;stack1(); stack0(); stack5()) #stack0[1] = i
+
+	#s1 := (e rightrotate 6) xor (e rightrotate 11) xor (e rightrotate 25)
+	rightrotate32(s1();e();stack1() >;       #s1 = (e rightrotate 6)
+		stack4();stack4() >;stack4() >>;stack4() >>>;stack5();stack5() >)
+
+	rightrotate32(stack3();e();stack1() >>;  #stack3 = (e rightrotate 11)
+		stack5();stack5() >;stack5() >>;stack5() >>>;stack6();stack6() >)
+	xor32(s1();s1();stack3();                # s1 ^= (e rightrotate 11)
+		stack5();stack5() >;stack5() >>;stack5() >>>;stack6();stack6() >;stack6() >>;stack6() >>>)
+
+	rightrotate32(stack3();e();stack1() >>>; #stack3 = (e rightrotate 25)
+		stack5();stack5() >;stack5() >>;stack5() >>>;stack6();stack6() >)
+	xor32(s1();s1();stack3();                # s1 ^= (e rightrotate 25)
+		stack5();stack5() >;stack5() >>;stack5() >>>;stack6();stack6() >;stack6() >>;stack6() >>>)
+
+	#ch := (e and f) xor ((not e) and g)
+	#temp1 := h + S1 + ch + k[i] + w[i]
+	#S0 := (a rightrotate 2) xor (a rightrotate 13) xor (a rightrotate 22)
+	#maj := (a and b) xor (a and c) xor (b and c)
+	#temp2 := S0 + maj
+
+	#h := g
+	#g := f
+	#f := e
+	#e := d + temp1
+	#d := c
+	#c := b
+	#b := a
+	#a := temp1 + temp2
+
+	!? stack0() - ?~
+	)
+
