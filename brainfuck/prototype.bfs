@@ -234,7 +234,19 @@ while(stack0();
 		stack5();stack5() >;stack5() >>;stack5() >>>;stack6();stack6() >;stack6() >>;stack6() >>>)
 
 	#w[i] := w[i-16] + s0 + w[i-7] + s1
-	#TODO
+	ad32(s0();s1();                           # s0 += s1
+		stack5();stack5() >;stack5() >>;stack5() >>>;stack6())
+	copy8(stack0() >; stack0() >>; stack0() >>>)
+	! stack0() >> ---------------- ?~         #stack0[2] = w+i-16
+	arrayRetrieve32(stack3();A();stack0() >>) #stack3 = w[i-16]
+	ad32(s0();stack3();                       # s0 += w[i-16]
+		stack5();stack5() >;stack5() >>;stack5() >>>;stack6())
+	copy8(stack0() >; stack0() >>; stack0() >>>)
+	! stack0() >> ------- ?~                  #stack0[2] = w+i-7
+	arrayRetrieve32(stack3();A();stack0() >>) #stack3 = w[i-7]
+	ad32(s0();stack3();                       # s0 += w[i-7]
+		stack5();stack5() >;stack5() >>;stack5() >>>;stack6())
+	arrayStore32(A();stack0() >;s0())         #w[i] = s0
 
 	!? stack0() - ?~
 	)
