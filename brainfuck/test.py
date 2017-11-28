@@ -201,7 +201,7 @@ while pointers[0] < maxProgram:
 
 
 print
-print "MEMORY POINTER: ", pointers[0]
+print "MEMORY POINTER: ", pointers[1]
 print "MEMORY DUMP:"
 for i in range(1024):
 	print '%02x' % memory[i],
