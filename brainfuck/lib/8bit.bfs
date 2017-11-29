@@ -183,6 +183,7 @@ add8(z;y;x;temp0)
 #z = x OP y
 #z may be x or y
 #OP takes xbit,ybit as input and stores output in zbit
+#OP must set xbit,ybit to 0
 bitwise8(z;x;y;OP;xbit;ybit;zbit;temp0;temp1;temp2;temp3;temp4)
 {
 	copy8(x;temp0;temp2)#temp0 = x
@@ -236,6 +237,32 @@ xor8(z;x;y;temp0;temp1;temp2;temp3;temp4;temp5;temp6;temp7)
 		? xbit() -      #        xbit = 0
 		? zbit() +      #        zbit = 1
 		? xbit() ]      #
+		?~
+	}
+
+	bitwise8(z;x;y;OP();xbit();ybit();zbit();temp3;temp4;temp5;temp6;temp7)
+}
+
+#z = x & y
+#z may be x or y
+and8(z;x;y;temp0;temp1;temp2;temp3;temp4;temp5;temp6;temp7)
+{
+	xbit(){temp0}
+	ybit(){temp1}
+	zbit(){temp2}
+
+	OP()
+	{
+		#One bit and
+		!
+		? zbit() 0()    #    zbit = 0
+		? ybit() [      #    if ybit
+		? ybit() -      #        ybit = 0
+		? xbit() [      #        if xbit
+		? xbit() -      #            xbit = 0
+		? zbit() +      #            zbit = 1
+		? xbit() ]      #
+		? ybit() ]      #
 		?~
 	}
 
