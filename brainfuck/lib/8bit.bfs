@@ -180,47 +180,66 @@ add8(z;y;x;temp0)
 	ad8(z;x;temp0)
 }
 
-#z = x ^ y
+#z = x OP y
 #z may be x or y
-xor8(z;x;y;temp0;temp1;temp2;temp3;temp4;temp5;temp6;temp7)
+#OP takes xbit,ybit as input and stores output in zbit
+bitwise8(z;x;y;OP;xbit;ybit;zbit;temp0;temp1;temp2;temp3;temp4)
 {
 	copy8(x;temp0;temp2)#temp0 = x
 	copy8(y;temp1;temp2)#temp1 = y
 	zero8(z)            #z = 0
 
 	!
-	? zero8(temp7)     #temp7 = 0
-	? temp7 +8()       #temp7 = 8  |repeat 8 times:
-	? while(temp7;     #while temp7|
-	?     decr8(temp7) #    temp7--|
+	? zero8(temp2)     #temp2 = 0
+	? temp2 +8()       #temp2 = 8  |repeat 8 times:
+	? while(temp2;     #while temp2|
+	?     decr8(temp2) #    temp2--|
 
-	?     shr8(temp0;temp2;temp4;temp5;temp6) #temp0 /= 2; temp2 = carry
-	?     shr8(temp1;temp3;temp4;temp5;temp6) #temp1 /= 2; temp3 = carry
+	?     shr8(z;temp3;temp4;xbit;zbit)     #z /= 2
+	?     shr8(temp0;xbit;temp3;temp4;zbit) #temp0 /= 2; xbit = carry
+	?     shr8(temp1;ybit;temp3;temp4;zbit) #temp1 /= 2; ybit = carry
 
-	?     zero8(temp4) #    temp4 = 0        |one bit xor
-	?     temp3 [      #    if temp3         |
-	?     temp3 -      #        temp3 = 0    |
-	?     temp4 +      #        temp4 = 1    |
-	?     temp2 [      #        if temp2     |
-	?     temp2 -      #            temp2 = 0|
-	?     temp4 -      #            temp4 = 0|
-	?     temp2 ]      #                     |
-	?     temp3 ]      #                     |
-	?     temp2 [      #    if temp2         |
-	?     temp2 -      #        temp2 = 0    |
-	?     temp4 +      #        temp4 = 1    |
-	?     temp2 ]      #                     |
+	?     OP
 
-	?     shr8(z;temp2;temp3;temp5;temp6) #z /= 2
-
-	?     *10(temp4;temp5) #    temp4 *= 0x10|if temp4:
-	?     temp4 [          #    while temp4  |    z += 0x80
-	?     temp4 -          #        temp4--  |
-	?     z     +8()       #        z += 8   |
-	?     temp4 ]          #                 |
+	?     *10(zbit;temp3) #    zbit *= 0x10|if zbit:
+	?     zbit [          #    while zbit  |    z += 0x80
+	?     zbit -          #        zbit--  |
+	?     z    +8()       #        z += 8  |
+	?     zbit ]          #                |
 	?     )
 
 	?~
+}
+
+#z = x ^ y
+#z may be x or y
+xor8(z;x;y;temp0;temp1;temp2;temp3;temp4;temp5;temp6;temp7)
+{
+	xbit(){temp0}
+	ybit(){temp1}
+	zbit(){temp2}
+
+	OP()
+	{
+		#One bit xor
+		!
+		? zero8(zbit()) #    zbit = 0
+		? ybit() [      #    if ybit
+		? ybit() -      #        ybit = 0
+		? zbit() +      #        zbit = 1
+		? xbit() [      #        if xbit
+		? xbit() -      #            xbit = 0
+		? zbit() -      #            zbit = 0
+		? xbit() ]      #
+		? ybit() ]      #
+		? xbit() [      #    if xbit
+		? xbit() -      #        xbit = 0
+		? zbit() +      #        zbit = 1
+		? xbit() ]      #
+		?~
+	}
+
+	bitwise8(z;x;y;OP();xbit();ybit();zbit();temp3;temp4;temp5;temp6;temp7)
 }
 
 #x >>= 1; c=carry
