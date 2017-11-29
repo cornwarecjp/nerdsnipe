@@ -269,6 +269,20 @@ and8(z;x;y;temp0;temp1;temp2;temp3;temp4;temp5;temp6;temp7)
 	bitwise8(z;x;y;OP();xbit();ybit();zbit();temp3;temp4;temp5;temp6;temp7)
 }
 
+#y = not x
+not8(y;x;temp0)
+{
+	copy8(x;temp0;y) #temp0 = x; y = 0
+
+	!
+	? temp0 +
+	? temp0 [
+	? temp0 +
+	? y     +
+	? temp0 ]
+	?~
+}
+
 #x >>= 1; c=carry
 shr8(x;c;temp0;temp1;temp2)
 {
