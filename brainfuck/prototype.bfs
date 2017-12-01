@@ -372,3 +372,41 @@ while(stack0();
 	!? stack0() - ?~
 	)
 
+
+#Add the compressed chunk to the current hash value:
+#h0 := h0 + a
+ad32(h0();a();
+	stack5();stack5() >;stack5() >>;stack5() >>>;stack6())
+#h1 := h1 + b
+ad32(h1();b();
+	stack5();stack5() >;stack5() >>;stack5() >>>;stack6())
+#h2 := h2 + c
+ad32(h2();c();
+	stack5();stack5() >;stack5() >>;stack5() >>>;stack6())
+#h3 := h3 + d
+ad32(h3();d();
+	stack5();stack5() >;stack5() >>;stack5() >>>;stack6())
+#h4 := h4 + e
+ad32(h4();e();
+	stack5();stack5() >;stack5() >>;stack5() >>>;stack6())
+#h5 := h5 + f
+ad32(h5();f();
+	stack5();stack5() >;stack5() >>;stack5() >>>;stack6())
+#h6 := h6 + g
+ad32(h6();g();
+	stack5();stack5() >;stack5() >>;stack5() >>>;stack6())
+#h7 := h7 + h
+ad32(h7();h();
+	stack5();stack5() >;stack5() >>;stack5() >>>;stack6())
+
+#Produce the final hash value (big-endian):
+#hash := h0 append h1 append h2 append h3 append h4 append h5 append h6 append h7
+write32(h0())
+write32(h1())
+write32(h2())
+write32(h3())
+write32(h4())
+write32(h5())
+write32(h6())
+write32(h7())
+
