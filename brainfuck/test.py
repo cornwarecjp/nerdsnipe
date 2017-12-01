@@ -1,6 +1,7 @@
 from collections import defaultdict
 import sys
 import hashlib
+from collections import deque
 
 
 
@@ -12,6 +13,7 @@ maxInstructions = 1000000000
 
 inputData = '\xfe'*32 #256-bit input data
 expectedOutputData = hashlib.sha256(inputData).digest()
+actualOutputData = ''
 
 memory = [0]*maxMemory
 pointers = [0,0] #progPtr, memPtr
@@ -37,6 +39,8 @@ class changePointerFunction:
 
 def writeOutputFunction():
 	def f():
+		global actualOutputData
+		actualOutputData += chr(memory[pointers[1]])
 		print '%02x' % memory[pointers[1]],
 		#sys.stdout.write(chr(memory[pointers[1]]))
 	return f
@@ -90,21 +94,23 @@ program = list(program)
 
 
 def convertToFunctions(program):
+	program = deque(program)
 	newProgram = []
 	while program:
-		c = program.pop(0)
+		print len(program), len(newProgram)
+		c = program.popleft()
 
 		if c in '+-':
 			increment = 1 if c=='+' else -1
 			while program and program[0] in '+-':
-				c = program.pop(0)
+				c = program.popleft()
 				increment += 1 if c=='+' else -1
 			newProgram.append(changeValueFunction(increment))
 
 		elif c in '<>':
 			increment = 1 if c=='>' else -1
 			while program and program[0] in '<>':
-				c = program.pop(0)
+				c = program.popleft()
 				increment += 1 if c=='>' else -1
 			newProgram.append(changePointerFunction(increment))
 
@@ -199,6 +205,12 @@ while pointers[0] < maxProgram:
 	if intructionCounter > maxInstructions:
 		raise Exception('Execution takes too long: maximum number of instructions exceeded')
 
+print
+print
+print 'Expected output: ', expectedOutputData.encode('hex')
+print 'Actual output  : ', actualOutputData.encode('hex')
+print 'Actual output(r):', actualOutputData[::-1].encode('hex')
+print expectedOutputData == actualOutputData
 
 print
 print "MEMORY POINTER: ", pointers[1]
