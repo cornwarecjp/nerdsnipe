@@ -264,6 +264,7 @@ copy32(h7(); h(); stack0())
 
 #    Compression function main loop:
 
+k0    (stack0() >>>;          stack3()) #stack0[3] = k
 const8(stack1()    ;+4();+0();stack3()) #stack1[0] = 64
 const8(stack1() >  ;+0();+6();stack3()) #stack1[1] = 6
 const8(stack1() >> ;+0();+b();stack3()) #stack1[2] = 11
@@ -271,6 +272,7 @@ const8(stack1() >>>;+1();+9();stack3()) #stack1[3] = 25
 const8(stack2()    ;+0();+2();stack3()) #stack2[0] = 2
 const8(stack2() >  ;+0();+d();stack3()) #stack2[1] = 13
 const8(stack2() >> ;+1();+6();stack3()) #stack2[2] = 22
+w0    (stack2() >>>;          stack3()) #stack2[3] = w
 
 #    for i from 0 to 63
 const8(stack0();+3();+0();stack3()) #stack0[0] = 64 - i
@@ -292,19 +294,80 @@ while(stack0();
 		stack5();stack5() >;stack5() >>;stack5() >>>;stack6();stack6() >;stack6() >>;stack6() >>>)
 
 	#ch := (e and f) xor ((not e) and g)
+	not32(stack3();e();stack5())             #stack3 = not e
+	and32(ch();stack3();g();                 #ch = ((not e) and g)
+		stack5();stack5() >;stack5() >>;stack5() >>>;stack6();stack6() >;stack6() >>;stack6() >>>)
+	and32(stack3();e();f();                  #stack3 = (e and f)
+		stack5();stack5() >;stack5() >>;stack5() >>>;stack6();stack6() >;stack6() >>;stack6() >>>)
+	xor32(ch();ch();stack3();                #ch ^= (e and f)
+		stack5();stack5() >;stack5() >>;stack5() >>>;stack6();stack6() >;stack6() >>;stack6() >>>)
+
 	#temp1 := h + S1 + ch + k[i] + w[i]
+	copy32(h();temp1();stack3())
+	ad32(temp1();s1();
+		stack5();stack5() >;stack5() >>;stack5() >>>;stack6())
+	ad32(temp1();ch();
+		stack5();stack5() >;stack5() >>;stack5() >>>;stack6())
+
+	add8(stack0() >>;stack0() >>>;stack0() >;stack3())        #stack0[2] = k+i
+	arrayRetrieve32(stack3();A();stack0() >>) #stack3 = k[i]
+	ad32(temp1();stack3();
+		stack5();stack5() >;stack5() >>;stack5() >>>;stack6())
+
+	add8(stack0() >>;stack2() >>>;stack0() >;stack3())        #stack0[2] = w+i
+	arrayRetrieve32(stack3();A();stack0() >>) #stack3 = w[i]
+	ad32(temp1();stack3();
+		stack5();stack5() >;stack5() >>;stack5() >>>;stack6())
+
 	#S0 := (a rightrotate 2) xor (a rightrotate 13) xor (a rightrotate 22)
+	rightrotate32(s0();a();stack2();        #s0 = (a rightrotate 2)
+		stack4();stack4() >;stack4() >>;stack4() >>>;stack5();stack5() >)
+	rightrotate32(stack3();a();stack2() >;    #stack3 = (a rightrotate 13)
+		stack4();stack4() >;stack4() >>;stack4() >>>;stack5();stack5() >)
+	xor32(s0();s0();stack3();               #s0 ^= (a rightrotate 13)
+		stack5();stack5() >;stack5() >>;stack5() >>>;stack6();stack6() >;stack6() >>;stack6() >>>)
+	rightrotate32(stack3();a();stack2() >>; #stack3 = (a rightrotate 22)
+		stack4();stack4() >;stack4() >>;stack4() >>>;stack5();stack5() >)
+	xor32(s0();s0();stack3();               #s0 ^= (a rightrotate 22)
+		stack5();stack5() >;stack5() >>;stack5() >>>;stack6();stack6() >;stack6() >>;stack6() >>>)
+
 	#maj := (a and b) xor (a and c) xor (b and c)
+	and32(maj();a();b();                    #maj = (a and b)
+		stack5();stack5() >;stack5() >>;stack5() >>>;stack6();stack6() >;stack6() >>;stack6() >>>)
+	and32(stack3();a();c();                 #stack3 = (a and c)
+		stack5();stack5() >;stack5() >>;stack5() >>>;stack6();stack6() >;stack6() >>;stack6() >>>)
+	xor32(maj();maj();stack3();             #maj ^= (a and c)
+		stack5();stack5() >;stack5() >>;stack5() >>>;stack6();stack6() >;stack6() >>;stack6() >>>)
+	and32(stack3();b();c();                 #stack3 = (b and c)
+		stack5();stack5() >;stack5() >>;stack5() >>>;stack6();stack6() >;stack6() >>;stack6() >>>)
+	xor32(maj();maj();stack3();             #maj ^= (b and c)
+		stack5();stack5() >;stack5() >>;stack5() >>>;stack6();stack6() >;stack6() >>;stack6() >>>)
+
 	#temp2 := S0 + maj
+	copy32(s0();temp2();stack3())
+	ad32(temp2();maj();
+		stack5();stack5() >;stack5() >>;stack5() >>>;stack6())
 
 	#h := g
+	move32(g();h())
 	#g := f
+	move32(f();g())
 	#f := e
+	move32(e();f())
 	#e := d + temp1
+	move32(d();e())
+	ad32(e();temp1();
+		stack5();stack5() >;stack5() >>;stack5() >>>;stack6())
 	#d := c
+	move32(c();d())
 	#c := b
+	move32(b();c())
 	#b := a
+	move32(a();b())
 	#a := temp1 + temp2
+	copy32(temp1();a();stack3())
+	ad32(a();temp2();
+		stack5();stack5() >;stack5() >>;stack5() >>>;stack6())
 
 	!? stack0() - ?~
 	)
