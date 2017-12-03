@@ -3,8 +3,8 @@ all: test
 SOURCES = lib/bool.bfs lib/control.bfs lib/8bit.bfs lib/16bit.bfs lib/32bit.bfs lib/array.bfs prototype.bfs
 #SOURCES = prototype.bfs
 
-test: bf.py prototype.bf
-	python bf.py prototype.bf
+test: test.py bf.py prototype.bf
+	python test.py python bf.py prototype.bf
 
 prototype.bfi: $(SOURCES)
 	cat $(SOURCES) > prototype.bfi

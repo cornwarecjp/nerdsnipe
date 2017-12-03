@@ -1,9 +1,6 @@
 from collections import defaultdict
 import sys
-import hashlib
 from collections import deque
-from random import SystemRandom
-
 
 
 maxMemory = 30000
@@ -12,10 +9,7 @@ maxInstructions = 1000000000
 
 
 
-rnd = SystemRandom()
-inputData = ''.join([chr(rnd.randint(0,255)) for i in range(32)])
-expectedOutputData = hashlib.sha256(inputData).digest()
-actualOutputData = ''
+inputData = raw_input()
 
 memory = [0]*maxMemory
 pointers = [0,0] #progPtr, memPtr
@@ -48,10 +42,8 @@ class changePointerFunction:
 
 class writeOutputFunction:
 	def __call__(self):
-		global actualOutputData
-		actualOutputData += chr(memory[pointers[1]])
-		print '%02x' % memory[pointers[1]],
-		#sys.stdout.write(chr(memory[pointers[1]]))
+		#print '%02x' % memory[pointers[1]],
+		sys.stdout.write(chr(memory[pointers[1]]))
 
 	def getCode(self):
 		return 'putchar(memory[i]);\n'
@@ -122,7 +114,7 @@ def convertToFunctions(program):
 	program = deque(program)
 	newProgram = []
 	while program:
-		print len(program), len(newProgram)
+		#print len(program), len(newProgram)
 		c = program.popleft()
 
 		if c in '+-':
@@ -274,18 +266,12 @@ if doCompile:
 else:
 	run()
 
-	print
-	print
-	print 'Input:           ', inputData.encode('hex')
-	print 'Expected output: ', expectedOutputData.encode('hex')
-	print 'Actual output  : ', actualOutputData.encode('hex')
-	print expectedOutputData == actualOutputData
-
-	print
-	print "MEMORY POINTER: ", pointers[1]
-	print "MEMORY DUMP:"
-	for i in range(1024):
-		print '%02x' % memory[i],
-		if (i+1) % 32 == 0:
-			print
+	if '--debug' in sys.argv:
+		print
+		print "MEMORY POINTER: ", pointers[1]
+		print "MEMORY DUMP:"
+		for i in range(1024):
+			print '%02x' % memory[i],
+			if (i+1) % 32 == 0:
+				print
 
