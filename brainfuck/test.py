@@ -2,6 +2,7 @@ from collections import defaultdict
 import sys
 import hashlib
 from collections import deque
+from random import SystemRandom
 
 
 
@@ -11,7 +12,8 @@ maxInstructions = 1000000000
 
 
 
-inputData = '\xfe'*32 #256-bit input data
+rnd = SystemRandom()
+inputData = ''.join([chr(rnd.randint(0,255)) for i in range(32)])
 expectedOutputData = hashlib.sha256(inputData).digest()
 actualOutputData = ''
 
@@ -207,9 +209,9 @@ while pointers[0] < maxProgram:
 
 print
 print
+print 'Input:           ', inputData.encode('hex')
 print 'Expected output: ', expectedOutputData.encode('hex')
 print 'Actual output  : ', actualOutputData.encode('hex')
-print 'Actual output(r):', actualOutputData[::-1].encode('hex')
 print expectedOutputData == actualOutputData
 
 print
