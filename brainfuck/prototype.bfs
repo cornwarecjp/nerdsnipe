@@ -275,7 +275,7 @@ const8(stack2() >> ;+1();+6();stack3()) #stack2[2] = 22
 w0    (stack2() >>>;          stack3()) #stack2[3] = w
 
 #    for i from 0 to 63
-const8(stack0();+3();+0();stack3()) #stack0[0] = 64 - i
+const8(stack0();+4();+0();stack3()) #stack0[0] = 64 - i
 while(stack0();
 	subtract8(stack0() >;stack1(); stack0(); stack5()) #stack0[1] = i
 
