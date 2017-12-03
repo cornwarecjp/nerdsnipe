@@ -12,6 +12,12 @@ prototype.bfi: $(SOURCES)
 prototype.bf: compile.py prototype.bfi
 	python compile.py prototype.bfi prototype.bf
 
+prototype.c: bf.py prototype.bf
+	python bf.py --compile prototype.bf prototype.c
+
+prototype: prototype.c
+	gcc -O3 -o prototype prototype.c
+
 clean:
 	-rm prototype.bf prototype.bfi
 

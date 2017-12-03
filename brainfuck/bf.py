@@ -29,6 +29,9 @@ class changeValueFunction:
 		#print 'changeValue', increment
 		memory[pointers[1]] = (memory[pointers[1]] + self.increment) % 256
 
+	def getCode(self):
+		return '*ptr += %d;\n' % self.increment
+
 
 class changePointerFunction:
 	def __init__(self, increment):
@@ -38,39 +41,58 @@ class changePointerFunction:
 		#print 'changepointer', increment
 		pointers[1] = (pointers[1] + self.increment) % maxMemory
 
+	def getCode(self):
+		increment = self.increment % maxMemory
+		return 'ptr = memory + (ptr-memory+%d) %% MAXMEM;\n' % increment
 
-def writeOutputFunction():
-	def f():
+
+class writeOutputFunction:
+	def __call__(self):
 		global actualOutputData
 		actualOutputData += chr(memory[pointers[1]])
 		print '%02x' % memory[pointers[1]],
 		#sys.stdout.write(chr(memory[pointers[1]]))
-	return f
+
+	def getCode(self):
+		return 'putchar(*ptr);\n'
 
 
-def readInputFunction():
-	def f():
+class readInputFunction:
+	def __call__(self):
 		global inputData
 		if len(inputData) == 0:
 			raise Exception('Read past end of input')
 		memory[pointers[1]] = ord(inputData[0])
 		inputData = inputData[1:]
-	return f
+
+	def getCode(self):
+		return '*ptr = getchar();\n'
 
 
-def jumpForwardFunction(p):
-	def f():
+class jumpForwardFunction:
+	def __init__(self, p):
+		self.p = p
+
+	def __call__(self):
 		#print 'jumpForward to', p
 		if memory[pointers[1]] == 0:
-			pointers[0] = p
-	return f
+			pointers[0] = self.p
 
-def jumpBackwardFunction(p):
-	def f():
+	def getCode(self):
+		return 'while(*ptr) {\n'
+
+
+class jumpBackwardFunction:
+	def __init__(self, p):
+		self.p = p
+
+	def __call__(self):
 		#print 'jumpForward to', p
 		if memory[pointers[1]] != 0:
-			pointers[0] = p
-	return f
+			pointers[0] = self.p
+
+	def getCode(self):
+		return '}\n'
 
 
 class moveValueFunction:
@@ -84,6 +106,15 @@ class moveValueFunction:
 			address = (pointers[1] + offset) % maxMemory
 			increment = multiplier * sourceValue
 			memory[address] = (memory[address] + increment) % 256
+
+	def getCode(self):
+		ret = ''
+		for offset, multiplier in self.increments.iteritems():
+			offset = offset % maxMemory
+			ret += 'ptr2 = memory + (ptr-memory+%d) %% MAXMEM;\n' % offset
+			ret += '*ptr2 = %d * *ptr;\n' % multiplier
+		ret += '*ptr = 0;\n'
+		return ret
 
 
 
@@ -196,8 +227,38 @@ def run():
 			raise Exception('Execution takes too long: maximum number of instructions exceeded')
 
 
+def compileCode():
+	ret = \
+'''
+#include <stdio.h>
 
-progFile = sys.argv[1]
+#define MAXMEM %d
+unsigned char memory[MAXMEM];
+unsigned char *ptr  = memory;
+unsigned char *ptr2 = memory;
+
+int main(int argc, char **argv)
+{
+''' % maxMemory
+
+	for p in program:
+		ret += p.getCode()
+
+	ret += \
+'''
+return 0;
+}
+'''
+	return ret
+
+
+doCompile = '--compile' in sys.argv
+if doCompile:
+	progFile = sys.argv[-2]
+	tgtFile  = sys.argv[-1]
+else:
+	progFile = sys.argv[-1]
+
 with open(progFile, 'rb') as f:
 	program = f.read()
 if len(program) > maxProgram:
@@ -206,20 +267,25 @@ program = list(program)
 program = convertToFunctions(program)
 program = detectValueMoves(program)
 determineJumps()
-run()
+if doCompile:
+	code = compileCode()
+	with open(tgtFile, 'wb') as f:
+		f.write(code)
+else:
+	run()
 
-print
-print
-print 'Input:           ', inputData.encode('hex')
-print 'Expected output: ', expectedOutputData.encode('hex')
-print 'Actual output  : ', actualOutputData.encode('hex')
-print expectedOutputData == actualOutputData
+	print
+	print
+	print 'Input:           ', inputData.encode('hex')
+	print 'Expected output: ', expectedOutputData.encode('hex')
+	print 'Actual output  : ', actualOutputData.encode('hex')
+	print expectedOutputData == actualOutputData
 
-print
-print "MEMORY POINTER: ", pointers[1]
-print "MEMORY DUMP:"
-for i in range(1024):
-	print '%02x' % memory[i],
-	if (i+1) % 32 == 0:
-		print
+	print
+	print "MEMORY POINTER: ", pointers[1]
+	print "MEMORY DUMP:"
+	for i in range(1024):
+		print '%02x' % memory[i],
+		if (i+1) % 32 == 0:
+			print
 
