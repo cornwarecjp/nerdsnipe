@@ -6,6 +6,9 @@ SOURCES = lib/bool.bfs lib/control.bfs lib/8bit.bfs lib/16bit.bfs lib/32bit.bfs 
 test: test.py bf.py prototype.bf
 	python test.py python bf.py prototype.bf
 
+test-compile: test.py bf.py prototype
+	python test.py ./prototype
+
 prototype.bfi: $(SOURCES)
 	cat $(SOURCES) > prototype.bfi
 
