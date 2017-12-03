@@ -60,8 +60,50 @@ class Memory:
 
 
 	def dump(self):
+		'''
+		0x00 h0
+		0x04 h1
+		0x08 h2
+		0x0c h3
+		0x10 h4
+		0x14 h5
+		0x18 h6
+		0x1c h7
+
+		0x20 s0
+		0x24 s1
+		0x28 ch
+		0x2c maj
+		0x30 temp1
+		0x34 temp2
+		0x38 a
+		0x3c b
+
+		0x40 c
+		0x44 d
+		0x48 e
+		0x4c f
+		0x50 g
+		0x54 h
+		0x58 stack0
+		0x5c stack1
+
+		0x60 stack2()
+		0x64 stack3()
+		0x68 stack4()
+		0x6c stack5()
+		0x70 stack6()
+		0x74 A.space
+		0x75 A.i1
+		0x76 A.i2
+		0x77 A.data
+		0x7b w[0]
+
+		0x17b k[0]
+		'''
+
 		ret = ''
-		for h in [self.h0, self.h1, self.h2, self.h4, self.h5, self.h6, self.h7]:
+		for h in [self.h0, self.h1, self.h2, self.h3, self.h4, self.h5, self.h6, self.h7]:
 			ret += struct.pack('>I', h)
 
 		ret += struct.pack('>I', self.s0)
@@ -90,13 +132,10 @@ class Memory:
 		ret += struct.pack('>I', 0)
 
 		#Array
-		ret += struct.pack('>I', 0)
-		ret += struct.pack('>I', 0)
-		ret += struct.pack('>I', 0)
-		ret += struct.pack('>I', 0)
-		ret += struct.pack('>I', 0)
-		ret += struct.pack('>I', 0)
-		ret += struct.pack('>I', 0)
+		ret += struct.pack('B', 0) #A.space
+		ret += struct.pack('B', 0) #A.i1
+		ret += struct.pack('B', 0) #A.i2
+		ret += struct.pack('>I', 0)#A.data
 
 		for w in self.w:
 			ret += struct.pack('>I', w)
