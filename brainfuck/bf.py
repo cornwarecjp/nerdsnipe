@@ -86,14 +86,6 @@ class moveValueFunction:
 			memory[address] = (memory[address] + increment) % 256
 
 
-#Load file
-progFile = sys.argv[1]
-with open(progFile, 'rb') as f:
-	program = f.read()
-if len(program) > maxProgram:
-	raise Exception('Maximum program size exceeded')
-program = list(program)
-
 
 def convertToFunctions(program):
 	program = deque(program)
@@ -126,7 +118,6 @@ def convertToFunctions(program):
 			newProgram.append(readInputFunction())
 
 	return newProgram
-program = convertToFunctions(program)
 
 
 def detectValueMoves(program):
@@ -177,15 +168,11 @@ def detectValueMoves(program):
 		newProgram.append(moveValueFunction(increments))
 
 	return newProgram
-program = detectValueMoves(program)
-
-
-maxProgram = len(program)
 
 
 def determineJumps():
 	stack = []
-	for p1 in range(maxProgram):
+	for p1 in range(len(program)):
 		if program[p1] == '[':
 			stack.append(p1)
 		elif program[p1] == ']':
@@ -197,15 +184,29 @@ def determineJumps():
 
 	if len(stack) != 0:
 		raise Exception('Program malformed: [ found without matching ]')
-determineJumps()
 
-intructionCounter = 0
-while pointers[0] < maxProgram:
-	program[pointers[0]]()
-	pointers[0] += 1
-	intructionCounter += 1
-	if intructionCounter > maxInstructions:
-		raise Exception('Execution takes too long: maximum number of instructions exceeded')
+
+def run():
+	intructionCounter = 0
+	while pointers[0] < len(program):
+		program[pointers[0]]()
+		pointers[0] += 1
+		intructionCounter += 1
+		if intructionCounter > maxInstructions:
+			raise Exception('Execution takes too long: maximum number of instructions exceeded')
+
+
+
+progFile = sys.argv[1]
+with open(progFile, 'rb') as f:
+	program = f.read()
+if len(program) > maxProgram:
+	raise Exception('Maximum program size exceeded')
+program = list(program)
+program = convertToFunctions(program)
+program = detectValueMoves(program)
+determineJumps()
+run()
 
 print
 print
