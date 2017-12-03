@@ -9,8 +9,7 @@ maxInstructions = 1000000000
 
 
 
-inputData = raw_input()
-
+inputData = ''
 memory = [0]*maxMemory
 pointers = [0,0] #progPtr, memPtr
 
@@ -264,6 +263,7 @@ if doCompile:
 	with open(tgtFile, 'wb') as f:
 		f.write(code)
 else:
+	inputData = raw_input()
 	run()
 
 	if '--debug' in sys.argv:
