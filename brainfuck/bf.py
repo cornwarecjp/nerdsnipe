@@ -102,7 +102,7 @@ class moveValueFunction:
 		ret = ''
 		for offset, multiplier in self.increments.iteritems():
 			offset = offset % maxMemory
-			ret += 'memory[(i + %d) %% MAXMEM] += %d * memory[i];\n' % (offset, multiplier)
+			ret += 'memory[(i + %d) %% MAXMEM] += %d * memory[i]; ' % (offset, multiplier)
 		ret += 'memory[i] = 0;\n'
 		return ret
 
@@ -221,16 +221,26 @@ def compileCode():
 	ret = \
 '''
 #include <stdio.h>
+#include <stdlib.h>
 
 #define MAXMEM %d
 unsigned char memory[MAXMEM];
 unsigned int i = 0;
 
+#define MAXINSTRCOUNT %d
+void incrementInstrCount()
+{
+	static unsigned int count = 0;
+	count++;
+	if(count > MAXINSTRCOUNT) exit(1);
+}
+
 int main(int argc, char **argv)
 {
-''' % maxMemory
+''' % (maxMemory, maxInstructions)
 
 	for p in program:
+		ret += '	incrementInstrCount(); '
 		ret += p.getCode()
 
 	ret += \
