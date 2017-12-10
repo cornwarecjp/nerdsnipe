@@ -59,7 +59,16 @@ redImage = ImageMath.eval('(a/128)^b', a=redImage, b=greenImage)
 def loadBlueImage():
 	with open(blueDataFile, 'rb') as f:
 		blueData = f.read()
-	qr = qrcode.make(blueData.strip())
+
+	qr = qrcode.QRCode(
+		box_size=1,
+		border=0,
+	)
+	qr.add_data(blueData)
+
+	qr.make(fit=True)
+	qr = qr.make_image()
+
 	ret = Image.new('L', size=image.size, color=255)
 	topleft = ((ret.size[0]-qr.size[0])/2, (ret.size[1]-qr.size[1])/2)
 	if topleft[0] < 0 or topleft[1] < 0:
