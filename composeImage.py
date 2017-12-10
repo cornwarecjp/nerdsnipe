@@ -79,7 +79,3 @@ redImage = ImageMath.eval('(a^b)*128', a=redImage, b=greenImage)
 morph(redImage, -shift)
 redImage.show()
 
-blueImage = ImageMath.eval('(a^b)*128', a=blueImage, b=greenImage)
-morph(blueImage, -2*shift)
-blueImage.show()
-
