@@ -24,27 +24,27 @@ image = Image.open(inImageFile)
 xSize, ySize = image.size
 print 'Image size: ', image.size
 
+
+def binDataToImage(data):
+	data = [bin(ord(byte))[2:] for byte in data]
+	data = ['0'*(8-len(byte)) + byte for byte in data]
+	data = ''.join(data)
+
+	if len(data) > xSize*ySize:
+		raise Exception('Image too small for data file')
+	print 'Data: %d %% coverage' % (100*len(data)/(xSize*ySize))
+
+	data = data * (1 + xSize*ySize/len(data))
+	data = data[:(xSize*ySize)]
+	return Image.frombytes('L', image.size, data)
+
+
 def loadGreenImage():
 	with open(greenDataFile, 'rb') as f:
 		greenData = f.read()
-
 	greenData = "You're on to something:\0" + greenData
+	return binDataToImage(greenData)
 
-	#lsb = [ord(c) & 0x0f for c in greenData]
-	#msb = [(ord(c) & 0xf0) >> 4 for c in greenData]
-	#greenData = ''.join([chr(c) for pair in izip(lsb,msb) for c in pair])
-
-	greenData = [bin(ord(byte))[2:] for byte in greenData]
-	greenData = ['0'*(8-len(byte)) + byte for byte in greenData]
-	greenData = ''.join(greenData)
-
-	if len(greenData) > xSize*ySize:
-		raise Exception('Image too small for green data file')
-	print 'Green data: %d %% coverage' % (100*len(greenData)/(xSize*ySize))
-
-	greenData = greenData * (1 + xSize*ySize/len(greenData))
-	greenData = greenData[:(xSize*ySize)]
-	return Image.frombytes('L', image.size, greenData)
 greenImage = loadGreenImage()
 greenImage = ImageMath.eval('a & 0x01', a=greenImage)
 
@@ -58,14 +58,10 @@ redImage = ImageMath.eval('(a/128)^b', a=redImage, b=greenImage)
 def loadBlueImage():
 	with open(blueDataFile, 'rb') as f:
 		blueData = f.read()
-
-	#TODO: add blueData
-	ret = Image.new('L', size=image.size, color=255)
-	return ret
+	return binDataToImage(blueData)
 
 blueImage = loadBlueImage()
-morph(blueImage, 2*shift)
-blueImage = ImageMath.eval('(a/128)^b', a=blueImage, b=greenImage)
+blueImage = ImageMath.eval('(a & 0x01)^b', a=blueImage, b=greenImage)
 
 imageMode = image.mode
 image = list(image.split())
