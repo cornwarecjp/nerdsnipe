@@ -35,7 +35,7 @@ function bitArrayToBytes(arr)
 function processValue()
 {
 	var value = document.getElementById("value").value;
-	value = (10000000000 * value).toString()
+	value = (10000000000 * value).toString();
 
 	var pos = value.indexOf(".");
 	if(pos >= 0)
@@ -43,10 +43,40 @@ function processValue()
 		value = value.slice(0, pos);
 	}
 
-	var out = sjcl.hash.sha256.hash(value);
+	var out = sjcl.hash.sha256.hash("Test" + value);
+	out = sjcl.hash.sha256.hash(out);
+	hexStr = sjcl.codec.hex.fromBits(out);
 
-	//hexStr = sjcl.codec.hex.fromBits(out);
+	var acceptedResults =
+	[
+	"3f3202fc30918e8cfedaaa7bdea2d7f8f16f6027b524c838a7cfc57051568271",
+	"e1d822c567c4d51a818a2163d64ba6a3691db453b88934f22ee0e37fc6d6e843",
+	"67eec47ae6ae9340789b9795b9d2b2f472142e524bfbaa3ed7a39eca518a596e"
+	];
+	var accepted = false;
+	var answerIndex = -1;
+	for(i=0; i<acceptedResults.length; i++)
+	{
+		if(acceptedResults[i] == hexStr)
+		{
+			accepted = true;
+			answerIndex = i;
+			break;
+		}
+	}
+	if(!accepted)
+	{
+		document.getElementById("answer").textContent = "The entered value is not close enough.";
+		return;
+	}
+
+	oldValue = value;
+	out = sjcl.hash.sha256.hash("A" + oldValue);
 	value = bitArrayToBytes(out);
+	out = sjcl.hash.sha256.hash("B" + oldValue);
+	value = value.concat(bitArrayToBytes(out));
+	out = sjcl.hash.sha256.hash("C" + oldValue);
+	value = value.concat(bitArrayToBytes(out));
 
 	for(i=0; i<value.length; i++)
 	{
