@@ -1,17 +1,22 @@
 <html>
 <body>
-Enter the value in standard SI units (meter, kilogram, volt, radians, kelvin, ...)
+Enter the value in standard SI units (meter, kilogram, volt, radians, kelvin, ...).
 <p>
 Value: <input type="text" id="value"><br>
-<input type="button" onclick="processValue()" value="Submit">
+<input type="button" onclick="processValue()" value="OK">
 
 <script>
-function processValue() {
+function processValue()
+{
 	value = document.getElementById("value").value;
+	value = (10000000000 * value).toString()
 
-    //document.open("text/html","replace");
-    //document.write(value);
-    //document.close();
+	pos = value.indexOf(".");
+	if(pos >= 0)
+	{
+		value = value.slice(0, pos);
+	}
+
 	document.getElementById("answer").textContent = value;
 }
 </script>
