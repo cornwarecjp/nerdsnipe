@@ -48,7 +48,12 @@ function processValue()
 	//hexStr = sjcl.codec.hex.fromBits(out);
 	value = bitArrayToBytes(out);
 
-	var hexStr = "", i;
+	for(i=0; i<value.length; i++)
+	{
+		value[i] = value[i] ^ 0x77;
+	}
+
+	var hexStr = "";
 	for(i=0; i<value.length; i++)
 	{
 		hexStr += value[i].toString(16);
