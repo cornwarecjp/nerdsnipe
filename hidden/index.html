@@ -1,4 +1,7 @@
 <html>
+<head>
+  <script type="text/javascript" src="sjcl.js"></script>
+</head>
 <body>
 Enter the value in standard SI units (meter, kilogram, volt, radians, kelvin, ...).
 <p>
@@ -8,14 +11,17 @@ Value: <input type="text" id="value"><br>
 <script>
 function processValue()
 {
-	value = document.getElementById("value").value;
+	var value = document.getElementById("value").value;
 	value = (10000000000 * value).toString()
 
-	pos = value.indexOf(".");
+	var pos = value.indexOf(".");
 	if(pos >= 0)
 	{
 		value = value.slice(0, pos);
 	}
+
+	var out = sjcl.hash.sha256.hash(value);
+	value = sjcl.codec.hex.fromBits(out)
 
 	document.getElementById("answer").textContent = value;
 }
