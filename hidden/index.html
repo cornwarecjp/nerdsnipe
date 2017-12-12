@@ -9,6 +9,29 @@ Value: <input type="text" id="value"><br>
 <input type="button" onclick="processValue()" value="OK">
 
 <script>
+function bitArrayToBytes(arr)
+{
+	//Copied from sjcl.codec.bytes, which is not included in the default build
+    var out = [], bl = sjcl.bitArray.bitLength(arr), i, tmp;
+
+    for (i=0; i<bl/8; i++) {
+
+      if ((i&3) === 0) {
+
+        tmp = arr[i/4];
+
+      }
+
+      out.push(tmp >>> 24);
+
+      tmp <<= 8;
+
+    }
+
+    return out;
+}
+
+
 function processValue()
 {
 	var value = document.getElementById("value").value;
@@ -21,9 +44,17 @@ function processValue()
 	}
 
 	var out = sjcl.hash.sha256.hash(value);
-	value = sjcl.codec.hex.fromBits(out)
 
-	document.getElementById("answer").textContent = value;
+	//hexStr = sjcl.codec.hex.fromBits(out);
+	value = bitArrayToBytes(out);
+
+	var hexStr = "", i;
+	for(i=0; i<value.length; i++)
+	{
+		hexStr += value[i].toString(16);
+	}
+
+	document.getElementById("answer").textContent = hexStr;
 }
 </script>
 
