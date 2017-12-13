@@ -22,5 +22,7 @@ with open('output.dat', 'rb') as f:
 print 'Input:           ', inputData.encode('hex')
 print 'Expected output: ', expectedOutputData.encode('hex')
 print 'Actual output  : ', actualOutputData.encode('hex')
-print expectedOutputData == actualOutputData
+
+if expectedOutputData != actualOutputData:
+	sys.exit(1)
 
