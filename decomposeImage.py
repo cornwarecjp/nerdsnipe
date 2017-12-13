@@ -58,7 +58,15 @@ morph(redImage, -shift)
 redImage.show()
 
 blueImage = ImageMath.eval('convert(a^b, "L")', a=blueImage, b=greenImage)
+translation = \
+{
+chr(219): 'B',
+chr(220): 'b',
+chr(223): 'p'
+}
+print ''.join([
+c if c not in translation else translation[c]
+for c in getBytes(blueImage)
+])
 
-
-print getBytes(blueImage)
 
