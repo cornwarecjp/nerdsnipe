@@ -11,7 +11,10 @@ expectedOutputData = hashlib.sha256(inputData).digest()
 with open('input.dat', 'wb') as f:
 	f.write(inputData)
 
-os.system(' '.join(sys.argv[1:]) + '< input.dat > output.dat')
+exitCode = os.system(' '.join(sys.argv[1:]) + '< input.dat > output.dat')
+if exitCode != 0:
+	print 'Execution time exceeded'
+	sys.exit(1)
 
 with open('output.dat', 'rb') as f:
 	actualOutputData = f.read()

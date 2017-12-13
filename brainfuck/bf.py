@@ -214,7 +214,7 @@ def run():
 		pointers[0] += 1
 		intructionCounter += 1
 		if intructionCounter > maxInstructions:
-			raise Exception('Execution takes too long: maximum number of instructions exceeded')
+			sys.exit(1)
 
 
 def compileCode():
