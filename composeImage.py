@@ -46,14 +46,14 @@ def loadGreenImage():
 	return binDataToImage(greenData)
 
 greenImage = loadGreenImage()
-greenImage = ImageMath.eval('a & 0x01', a=greenImage)
+greenImage = ImageMath.eval('convert(a & 0x01, "L")', a=greenImage)
 
 redImage = Image.open(redImageFile)
 if redImage.size != image.size:
 	raise Exception('Red image has wrong size')
 redImage = redImage.convert(mode='L')
 morph(redImage, shift)
-redImage = ImageMath.eval('(a/128)^b', a=redImage, b=greenImage)
+redImage = ImageMath.eval('convert((a/128), "L")^b', a=redImage, b=greenImage)
 
 def loadBlueImage():
 	with open(blueDataFile, 'rb') as f:
@@ -61,7 +61,7 @@ def loadBlueImage():
 	return binDataToImage(blueData)
 
 blueImage = loadBlueImage()
-blueImage = ImageMath.eval('(a & 0x01)^b', a=blueImage, b=greenImage)
+blueImage = ImageMath.eval('convert((a & 0x01)^b, "L")', a=blueImage, b=greenImage)
 
 imageMode = image.mode
 image = list(image.split())
