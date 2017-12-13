@@ -74,8 +74,3 @@ image = Image.merge(imageMode, image)
 
 image.save(outImageFile)
 
-
-redImage = ImageMath.eval('(a^b)*128', a=redImage, b=greenImage)
-morph(redImage, -shift)
-redImage.show()
-

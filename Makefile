@@ -1,7 +1,8 @@
 all: puzzle.png
 
-puzzle.png: composeImage.py cat.jpg amaze.py.gz discs.png qr-output.txt
+puzzle.png: composeImage.py decomposeImage.py cat.jpg amaze.py.gz discs.png qr-output.txt
 	python composeImage.py cat.jpg puzzle.png amaze.py.gz discs.png qr-output.txt
+	python decomposeImage.py puzzle.png
 
 qr-output.txt: makeqr.py qr.txt
 	python makeqr.py qr.txt qr-output.txt
