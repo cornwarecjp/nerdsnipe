@@ -41,7 +41,7 @@ def getBytes(image):
 	return subset
 
 
-inImageFile = sys.argv[-1]
+inImageFile, zipFile = sys.argv[-2:]
 
 image = Image.open(inImageFile)
 xSize, ySize = image.size
@@ -72,6 +72,10 @@ for c in getBytes(blueImage)
 greenBytes = getBytes(greenImage)
 pos = greenBytes.index('\0')
 print greenBytes[:pos]
-zipFile = greenBytes[pos+1:]
-print len(zipFile)
+zipData = greenBytes[pos+1:]
+
+with open(zipFile, 'rb') as f:
+	data = f.read()
+assert data == zipData
+print 'zip file is OK'
 
