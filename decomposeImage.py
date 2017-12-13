@@ -69,4 +69,9 @@ c if c not in translation else translation[c]
 for c in getBytes(blueImage)
 ])
 
+greenBytes = getBytes(greenImage)
+pos = greenBytes.index('\0')
+print greenBytes[:pos]
+zipFile = greenBytes[pos+1:]
+print len(zipFile)
 
