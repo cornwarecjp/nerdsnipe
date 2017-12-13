@@ -154,7 +154,12 @@ def detectValueMoves(program):
 		codeInLoop = []
 		isValueMove = False
 		while True:
-			c = program.pop(0)
+			try:
+				c = program.pop(0)
+			except IndexError:
+				print 'Program malformed: [ found without matching ]'
+				sys.exit(1)
+
 			if isinstance(c, changeValueFunction) or isinstance(c, changePointerFunction):
 				codeInLoop.append(c)
 			elif c == ']':
