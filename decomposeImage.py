@@ -1,4 +1,5 @@
 import sys
+from collections import deque
 
 from PIL import Image, ImageMath
 
@@ -16,6 +17,30 @@ def morph(image, shift):
 			pixels[x,y] = row[(x+rowShift) % xSize]
 
 
+def getBytes(image):
+	bits = deque(image.tobytes())
+	bytes = deque()
+	while bits:
+		byte = 0
+		try:
+			for i in range(8):
+				byte = 2*byte + ord(bits.popleft())
+		except IndexError:
+			break #bits is probably empty
+		bytes.append(byte)
+	bytes = ''.join([chr(b) for b in bytes])
+
+	subset = ''
+	while True:
+		subset += bytes[0]
+		bytes = bytes[1:]
+
+		if len(subset) > 100 and bytes.startswith(subset):
+			break
+
+	return subset
+
+
 inImageFile = sys.argv[-1]
 
 image = Image.open(inImageFile)
@@ -24,12 +49,16 @@ print 'Image size: ', image.size
 
 redImage, greenImage, blueImage = list(image.split())
 
-redImage   = ImageMath.eval('a & 0x01', a=redImage)
-greenImage = ImageMath.eval('a & 0x01', a=greenImage)
-blueImage   = ImageMath.eval('a & 0x01', a=blueImage)
+redImage   = ImageMath.eval('convert(a & 0x01, "L")', a=redImage)
+greenImage = ImageMath.eval('convert(a & 0x01, "L")', a=greenImage)
+blueImage  = ImageMath.eval('convert(a & 0x01, "L")', a=blueImage)
 
-redImage = ImageMath.eval('(a^b)*128', a=redImage, b=greenImage)
+redImage = ImageMath.eval('convert((a^b)*128, "L")', a=redImage, b=greenImage)
 morph(redImage, -shift)
 redImage.show()
 
+blueImage = ImageMath.eval('convert(a^b, "L")', a=blueImage, b=greenImage)
+
+
+print getBytes(blueImage)
 
