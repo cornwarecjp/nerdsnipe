@@ -5,7 +5,7 @@
 <body>
 Enter the value in standard SI units (meter, kilogram, volt, radians, kelvin, ...).
 <p>
-Value: <input type="text" id="value"><br>
+Value: <input type="text" id="value" onchange="processValue()" oninput="processValue()"><br>
 <input type="button" onclick="processValue()" value="OK">
 
 <script>
