@@ -198,13 +198,15 @@ def determineJumps():
 			stack.append(p1)
 		elif program[p1] == ']':
 			if len(stack) == 0:
-				raise Exception('Program malformed: ] found without matching [')
+				print 'Program malformed: ] found without matching ['
+				sys.exit(1)
 			p2 = stack.pop(-1)
 			program[p1] = jumpBackwardFunction(p2)
 			program[p2] = jumpForwardFunction(p1)
 
 	if len(stack) != 0:
-		raise Exception('Program malformed: [ found without matching ]')
+		print 'Program malformed: [ found without matching ]'
+		sys.exit(1)
 
 
 def run():
@@ -261,7 +263,8 @@ else:
 with open(progFile, 'rb') as f:
 	program = f.read()
 if len(program) > maxProgram:
-	raise Exception('Maximum program size exceeded')
+	print 'Maximum program size exceeded'
+	sys.exit(1)
 program = list(program)
 program = convertToFunctions(program)
 program = detectValueMoves(program)
