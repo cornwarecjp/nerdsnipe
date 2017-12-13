@@ -275,9 +275,13 @@ program = convertToFunctions(program)
 program = detectValueMoves(program)
 determineJumps()
 if doCompile:
-	code = compileCode()
-	with open(tgtFile, 'wb') as f:
-		f.write(code)
+	try:
+		code = compileCode()
+		with open(tgtFile, 'wb') as f:
+			f.write(code)
+	except Exception as e:
+		print 'Unhandled exception: ', e
+		sys.exit(2)
 else:
 	inputData = raw_input()
 	run()
