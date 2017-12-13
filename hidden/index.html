@@ -102,7 +102,9 @@ function processValue()
 	var hexStr = "";
 	for(i=0; i<outLength; i++)
 	{
-		hexStr += (value[i+1] ^ xorData[i+1]).toString(16);
+		xored = value[i+1] ^ xorData[i+1];
+		paddedHex = (xored + 256).toString(16).slice(1);
+		hexStr += paddedHex;
 	}
 
 	document.getElementById("answer").textContent = hexStr;
