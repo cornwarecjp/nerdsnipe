@@ -45,11 +45,12 @@ function runProgram()
 
 	if($returnValue == 0)
 	{
-		echo "\nOK\n";
+		echo "\nOK";
+		echo "\nYou gained access to the <a href=\"2d7e473fae0c3fb887c5906166ee107a8dd49627218f6159bbdc46d35026eae1.html\">Next page</a>.";
 	}
 	else
 	{
-		echo "\nNot OK\n";
+		echo "\nNot OK";
 	}
 }
 
