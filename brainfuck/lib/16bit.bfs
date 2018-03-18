@@ -15,19 +15,21 @@ write16()  {write()   > write()   <}
 
 #y = bool(x)
 #note: y is 8-bit
-bool16(x; y; temp0)
+#stack: 2 bytes
+bool16(x; y; stack)
 {
-	or(x; x >; y; temp0; temp0 >)
+	or(x; x >; y; stack; stack >)
 }
 
-decr16(temp0)
+#stack: 2 bytes
+decr16(stack)
 {
 	lsb(){>}
 	msb(){}
 
 	ifelse(lsb();;        #if lsb == 0
 		-                 #    msb--
-		;temp0;temp0 >)
+		;stack;stack >)
 
 	!
 	? lsb() -             #lsb--
@@ -35,7 +37,8 @@ decr16(temp0)
 }
 
 
-incr16(temp0)
+#stack: 2 bytes
+incr16(stack)
 {
 	lsb(){>}
 	msb(){}
@@ -46,6 +49,6 @@ incr16(temp0)
 
 	ifelse(lsb();;       #if lsb == 0
 		+                #msb++
-		;temp0;temp0 >)
+		;stack;stack >)
 }
 

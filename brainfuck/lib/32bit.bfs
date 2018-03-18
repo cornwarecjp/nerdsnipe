@@ -14,23 +14,24 @@ write32(x)
 	?~
 }
 
-const32(x;a;b;c;d;e;f;g;h;temp0)
+#stack: 1 byte
+const32(x;a;b;c;d;e;f;g;h;stack)
 {
 	!
 	? x     0() a
-	?       *10(x    ;temp0)
+	?       *10(x    ;stack)
 	? x     b
 
 	? x >   0() c
-	?       *10(x >  ;temp0)
+	?       *10(x >  ;stack)
 	? x >   d
 
 	? x >>  0() e
-	?       *10(x >> ;temp0)
+	?       *10(x >> ;stack)
 	? x >>  f
 
 	? x >>> 0() g
-	?       *10(x >>>;temp0)
+	?       *10(x >>>;stack)
 	? x >>> h
 
 	? ~
@@ -54,13 +55,13 @@ move32(x;y)
 }
 
 #y = x
-#temp0 can be 8-bit
-copy32(x;y;temp0)
+#stack: 1 byte
+copy32(x;y;stack)
 {
-	copy8 (x    ;y    ;temp0)
-	copy8F(x >  ;y >  ;temp0)
-	copy8F(x >> ;y >> ;temp0)
-	copy8F(x >>>;y >>>;temp0)
+	copy8 (x    ;y    ;stack)
+	copy8F(x >  ;y >  ;stack)
+	copy8F(x >> ;y >> ;stack)
+	copy8F(x >>>;y >>>;stack)
 }
 
 #y += x
@@ -136,23 +137,26 @@ and32(z;x;y;stack)
 }
 
 #y = ~x
-#temp0 can be 8-bit
-not32(y;x;temp0)
+#stack: 1 byte
+not32(y;x;stack)
 {
-	not8(y    ;x    ;temp0)
-	not8(y >  ;x >  ;temp0)
-	not8(y >> ;x >> ;temp0)
-	not8(y >>>;x >>>;temp0)
+	not8(y    ;x    ;stack)
+	not8(y >  ;x >  ;stack)
+	not8(y >> ;x >> ;stack)
+	not8(y >>>;x >>>;stack)
 }
 
 #x >>= 1; c=carry
 #c is 8-bit
-#temp0;temp1;temp2;temp3 can be 8-bit
-shr32(x;c;temp0;temp1;temp2;temp3)
+#stack: 4 bytes
+shr32(x;c;stack)
 {
+	c2(){stack}
+	newStack(){stack >}
+
 	addCarry(c;dest)
 	{
-		*10(c;temp0) # c is now 000x0000
+		*10(c;newStack()) # c is now 000x0000
 		!
 		? c    [        #|dest += 8*c
 		? dest ++++++++ #|c = 0
@@ -161,13 +165,13 @@ shr32(x;c;temp0;temp1;temp2;temp3)
 		?~
 	}
 
-	shr8(x >>>;c    ;temp0;temp1;temp2)
-	shr8(x >> ;temp3;temp0;temp1;temp2)
-	addCarry(temp3;x >>>)
-	shr8(x >  ;temp3;temp0;temp1;temp2)
-	addCarry(temp3;x >> )
-	shr8(x    ;temp3;temp0;temp1;temp2)
-	addCarry(temp3;x >  )
+	shr8(x >>>;c   ;newStack();newStack() >;newStack() >>)
+	shr8(x >> ;c2();newStack();newStack() >;newStack() >>)
+	addCarry(c2();x >>>)
+	shr8(x >  ;c2();newStack();newStack() >;newStack() >>)
+	addCarry(c2();x >> )
+	shr8(x    ;c2();newStack();newStack() >;newStack() >>)
+	addCarry(c2();x >  )
 }
 
 #x rr= 1; c=carry
@@ -206,18 +210,15 @@ rr32(x;stack)
 #stack: 6 bytes
 rightshift32(z;x;y;stack)
 {
-	temp0(){stack}
-	temp1(){stack >   }
-	temp2(){stack >>  }
-	temp3(){stack >>> }
-	temp4(){stack >>>>}
-	temp5(){stack >>>> >   }
+	c(){stack}
+	count(){stack >}
+	newStack(){stack >>}
 
-	copy32(x;z;temp0())
-	copy8(y;temp5();temp0())
-	while(temp5();
-		shr32(z;temp0();temp1();temp2();temp3();temp4())
-		decr8(temp5())
+	copy32(x;z;newStack())
+	copy8(y;count();newStack())
+	while(count();
+		shr32(z;c();newStack())
+		decr8(count())
 		)
 }
 
