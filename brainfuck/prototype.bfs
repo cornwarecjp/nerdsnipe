@@ -39,7 +39,8 @@ f(){e() >1()}
 g(){f() >1()}
 h(){g() >1()}
 
-stack0(){h() >1()}
+stack(){h() >1()}
+stack0(){stack()}
 stack1(){stack0() >1()}
 stack2(){stack1() >1()}
 stack3(){stack2() >1()}
@@ -52,9 +53,9 @@ A(){stack6() >1()}
 
 #In A:
 #w = 0x00..0x3f
-w0(x;temp0){zero8(x)}
+w0(x;stack){zero8(x)}
 #k = 0x40..0x7f
-k0(x;temp0){const8(x;+4();+0();temp0)}
+k0(x;stack){const8(x;+4();+0();stack)}
 
 #Note 1: All variables are 32 bit unsigned integers and addition is calculated modulo 232
 #Note 2: For each round, there is one round constant k[i] and one entry in the message schedule array w[i], 0 ≤ i ≤ 63
@@ -75,86 +76,98 @@ const32(h5(); +9(); +b(); +0(); +5(); +6(); +8(); +8(); +c(); stack0())
 const32(h6(); +1(); +f(); +8(); +3(); +d(); +9(); +a(); +b(); stack0())
 const32(h7(); +5(); +b(); +e(); +0(); +c(); +d(); +1(); +9(); stack0())
 
-#Initialize array of round constants:
-#(first 32 bits of the fractional parts of the cube roots of the first 64 primes 2..311):
-#stack0 = index to k[0]; stack1 = value to be stored
-k0(stack0();stack2())
-append()
+
+append(index;value)
 {
-	arrayStore32(A();stack0();stack1())
+	arrayStore32(A();index;value)
 	!
-	stack0() + #index++
+	index +
 	?~
 }
-appendConst(a;b;c;d;e;f;g;h)
+appendConst(index;a;b;c;d;e;f;g;h;stack)
 {
-	const32(stack1(); a;b;c;d;e;f;g;h; stack2())
-	append()
+	value(){stack}
+	newStack(){value() >1()}
+	const32(value(); a;b;c;d;e;f;g;h; newStack())
+	append(index;value())
 }
-appendConst(+4(); +2(); +8(); +a(); +2(); +f(); +9(); +8())
-appendConst(+7(); +1(); +3(); +7(); +4(); +4(); +9(); +1())
-appendConst(+b(); +5(); +c(); +0(); +f(); +b(); +c(); +f())
-appendConst(+e(); +9(); +b(); +5(); +d(); +b(); +a(); +5())
-appendConst(+3(); +9(); +5(); +6(); +c(); +2(); +5(); +b())
-appendConst(+5(); +9(); +f(); +1(); +1(); +1(); +f(); +1())
-appendConst(+9(); +2(); +3(); +f(); +8(); +2(); +a(); +4())
-appendConst(+a(); +b(); +1(); +c(); +5(); +e(); +d(); +5())
-appendConst(+d(); +8(); +0(); +7(); +a(); +a(); +9(); +8())
-appendConst(+1(); +2(); +8(); +3(); +5(); +b(); +0(); +1())
-appendConst(+2(); +4(); +3(); +1(); +8(); +5(); +b(); +e())
-appendConst(+5(); +5(); +0(); +c(); +7(); +d(); +c(); +3())
-appendConst(+7(); +2(); +b(); +e(); +5(); +d(); +7(); +4())
-appendConst(+8(); +0(); +d(); +e(); +b(); +1(); +f(); +e())
-appendConst(+9(); +b(); +d(); +c(); +0(); +6(); +a(); +7())
-appendConst(+c(); +1(); +9(); +b(); +f(); +1(); +7(); +4())
-appendConst(+e(); +4(); +9(); +b(); +6(); +9(); +c(); +1())
-appendConst(+e(); +f(); +b(); +e(); +4(); +7(); +8(); +6())
-appendConst(+0(); +f(); +c(); +1(); +9(); +d(); +c(); +6())
-appendConst(+2(); +4(); +0(); +c(); +a(); +1(); +c(); +c())
-appendConst(+2(); +d(); +e(); +9(); +2(); +c(); +6(); +f())
-appendConst(+4(); +a(); +7(); +4(); +8(); +4(); +a(); +a())
-appendConst(+5(); +c(); +b(); +0(); +a(); +9(); +d(); +c())
-appendConst(+7(); +6(); +f(); +9(); +8(); +8(); +d(); +a())
-appendConst(+9(); +8(); +3(); +e(); +5(); +1(); +5(); +2())
-appendConst(+a(); +8(); +3(); +1(); +c(); +6(); +6(); +d())
-appendConst(+b(); +0(); +0(); +3(); +2(); +7(); +c(); +8())
-appendConst(+b(); +f(); +5(); +9(); +7(); +f(); +c(); +7())
-appendConst(+c(); +6(); +e(); +0(); +0(); +b(); +f(); +3())
-appendConst(+d(); +5(); +a(); +7(); +9(); +1(); +4(); +7())
-appendConst(+0(); +6(); +c(); +a(); +6(); +3(); +5(); +1())
-appendConst(+1(); +4(); +2(); +9(); +2(); +9(); +6(); +7())
-appendConst(+2(); +7(); +b(); +7(); +0(); +a(); +8(); +5())
-appendConst(+2(); +e(); +1(); +b(); +2(); +1(); +3(); +8())
-appendConst(+4(); +d(); +2(); +c(); +6(); +d(); +f(); +c())
-appendConst(+5(); +3(); +3(); +8(); +0(); +d(); +1(); +3())
-appendConst(+6(); +5(); +0(); +a(); +7(); +3(); +5(); +4())
-appendConst(+7(); +6(); +6(); +a(); +0(); +a(); +b(); +b())
-appendConst(+8(); +1(); +c(); +2(); +c(); +9(); +2(); +e())
-appendConst(+9(); +2(); +7(); +2(); +2(); +c(); +8(); +5())
-appendConst(+a(); +2(); +b(); +f(); +e(); +8(); +a(); +1())
-appendConst(+a(); +8(); +1(); +a(); +6(); +6(); +4(); +b())
-appendConst(+c(); +2(); +4(); +b(); +8(); +b(); +7(); +0())
-appendConst(+c(); +7(); +6(); +c(); +5(); +1(); +a(); +3())
-appendConst(+d(); +1(); +9(); +2(); +e(); +8(); +1(); +9())
-appendConst(+d(); +6(); +9(); +9(); +0(); +6(); +2(); +4())
-appendConst(+f(); +4(); +0(); +e(); +3(); +5(); +8(); +5())
-appendConst(+1(); +0(); +6(); +a(); +a(); +0(); +7(); +0())
-appendConst(+1(); +9(); +a(); +4(); +c(); +1(); +1(); +6())
-appendConst(+1(); +e(); +3(); +7(); +6(); +c(); +0(); +8())
-appendConst(+2(); +7(); +4(); +8(); +7(); +7(); +4(); +c())
-appendConst(+3(); +4(); +b(); +0(); +b(); +c(); +b(); +5())
-appendConst(+3(); +9(); +1(); +c(); +0(); +c(); +b(); +3())
-appendConst(+4(); +e(); +d(); +8(); +a(); +a(); +4(); +a())
-appendConst(+5(); +b(); +9(); +c(); +c(); +a(); +4(); +f())
-appendConst(+6(); +8(); +2(); +e(); +6(); +f(); +f(); +3())
-appendConst(+7(); +4(); +8(); +f(); +8(); +2(); +e(); +e())
-appendConst(+7(); +8(); +a(); +5(); +6(); +3(); +6(); +f())
-appendConst(+8(); +4(); +c(); +8(); +7(); +8(); +1(); +4())
-appendConst(+8(); +c(); +c(); +7(); +0(); +2(); +0(); +8())
-appendConst(+9(); +0(); +b(); +e(); +f(); +f(); +f(); +a())
-appendConst(+a(); +4(); +5(); +0(); +6(); +c(); +e(); +b())
-appendConst(+b(); +e(); +f(); +9(); +a(); +3(); +f(); +7())
-appendConst(+c(); +6(); +7(); +1(); +7(); +8(); +f(); +2())
+
+#Initialize array of round constants:
+#(first 32 bits of the fractional parts of the cube roots of the first 64 primes 2..311):
+initRoundConstants(stack)
+{
+	index()   {stack    }
+	newStack(){index() >}
+	ac(a;b;c;d;e;f;g;h){appendConst(index();a;b;c;d;e;f;g;h;newStack())}
+
+	k0(index();newStack())
+
+	ac(+4(); +2(); +8(); +a(); +2(); +f(); +9(); +8())
+	ac(+7(); +1(); +3(); +7(); +4(); +4(); +9(); +1())
+	ac(+b(); +5(); +c(); +0(); +f(); +b(); +c(); +f())
+	ac(+e(); +9(); +b(); +5(); +d(); +b(); +a(); +5())
+	ac(+3(); +9(); +5(); +6(); +c(); +2(); +5(); +b())
+	ac(+5(); +9(); +f(); +1(); +1(); +1(); +f(); +1())
+	ac(+9(); +2(); +3(); +f(); +8(); +2(); +a(); +4())
+	ac(+a(); +b(); +1(); +c(); +5(); +e(); +d(); +5())
+	ac(+d(); +8(); +0(); +7(); +a(); +a(); +9(); +8())
+	ac(+1(); +2(); +8(); +3(); +5(); +b(); +0(); +1())
+	ac(+2(); +4(); +3(); +1(); +8(); +5(); +b(); +e())
+	ac(+5(); +5(); +0(); +c(); +7(); +d(); +c(); +3())
+	ac(+7(); +2(); +b(); +e(); +5(); +d(); +7(); +4())
+	ac(+8(); +0(); +d(); +e(); +b(); +1(); +f(); +e())
+	ac(+9(); +b(); +d(); +c(); +0(); +6(); +a(); +7())
+	ac(+c(); +1(); +9(); +b(); +f(); +1(); +7(); +4())
+	ac(+e(); +4(); +9(); +b(); +6(); +9(); +c(); +1())
+	ac(+e(); +f(); +b(); +e(); +4(); +7(); +8(); +6())
+	ac(+0(); +f(); +c(); +1(); +9(); +d(); +c(); +6())
+	ac(+2(); +4(); +0(); +c(); +a(); +1(); +c(); +c())
+	ac(+2(); +d(); +e(); +9(); +2(); +c(); +6(); +f())
+	ac(+4(); +a(); +7(); +4(); +8(); +4(); +a(); +a())
+	ac(+5(); +c(); +b(); +0(); +a(); +9(); +d(); +c())
+	ac(+7(); +6(); +f(); +9(); +8(); +8(); +d(); +a())
+	ac(+9(); +8(); +3(); +e(); +5(); +1(); +5(); +2())
+	ac(+a(); +8(); +3(); +1(); +c(); +6(); +6(); +d())
+	ac(+b(); +0(); +0(); +3(); +2(); +7(); +c(); +8())
+	ac(+b(); +f(); +5(); +9(); +7(); +f(); +c(); +7())
+	ac(+c(); +6(); +e(); +0(); +0(); +b(); +f(); +3())
+	ac(+d(); +5(); +a(); +7(); +9(); +1(); +4(); +7())
+	ac(+0(); +6(); +c(); +a(); +6(); +3(); +5(); +1())
+	ac(+1(); +4(); +2(); +9(); +2(); +9(); +6(); +7())
+	ac(+2(); +7(); +b(); +7(); +0(); +a(); +8(); +5())
+	ac(+2(); +e(); +1(); +b(); +2(); +1(); +3(); +8())
+	ac(+4(); +d(); +2(); +c(); +6(); +d(); +f(); +c())
+	ac(+5(); +3(); +3(); +8(); +0(); +d(); +1(); +3())
+	ac(+6(); +5(); +0(); +a(); +7(); +3(); +5(); +4())
+	ac(+7(); +6(); +6(); +a(); +0(); +a(); +b(); +b())
+	ac(+8(); +1(); +c(); +2(); +c(); +9(); +2(); +e())
+	ac(+9(); +2(); +7(); +2(); +2(); +c(); +8(); +5())
+	ac(+a(); +2(); +b(); +f(); +e(); +8(); +a(); +1())
+	ac(+a(); +8(); +1(); +a(); +6(); +6(); +4(); +b())
+	ac(+c(); +2(); +4(); +b(); +8(); +b(); +7(); +0())
+	ac(+c(); +7(); +6(); +c(); +5(); +1(); +a(); +3())
+	ac(+d(); +1(); +9(); +2(); +e(); +8(); +1(); +9())
+	ac(+d(); +6(); +9(); +9(); +0(); +6(); +2(); +4())
+	ac(+f(); +4(); +0(); +e(); +3(); +5(); +8(); +5())
+	ac(+1(); +0(); +6(); +a(); +a(); +0(); +7(); +0())
+	ac(+1(); +9(); +a(); +4(); +c(); +1(); +1(); +6())
+	ac(+1(); +e(); +3(); +7(); +6(); +c(); +0(); +8())
+	ac(+2(); +7(); +4(); +8(); +7(); +7(); +4(); +c())
+	ac(+3(); +4(); +b(); +0(); +b(); +c(); +b(); +5())
+	ac(+3(); +9(); +1(); +c(); +0(); +c(); +b(); +3())
+	ac(+4(); +e(); +d(); +8(); +a(); +a(); +4(); +a())
+	ac(+5(); +b(); +9(); +c(); +c(); +a(); +4(); +f())
+	ac(+6(); +8(); +2(); +e(); +6(); +f(); +f(); +3())
+	ac(+7(); +4(); +8(); +f(); +8(); +2(); +e(); +e())
+	ac(+7(); +8(); +a(); +5(); +6(); +3(); +6(); +f())
+	ac(+8(); +4(); +c(); +8(); +7(); +8(); +1(); +4())
+	ac(+8(); +c(); +c(); +7(); +0(); +2(); +0(); +8())
+	ac(+9(); +0(); +b(); +e(); +f(); +f(); +f(); +a())
+	ac(+a(); +4(); +5(); +0(); +6(); +c(); +e(); +b())
+	ac(+b(); +e(); +f(); +9(); +a(); +3(); +f(); +7())
+	ac(+c(); +6(); +7(); +1(); +7(); +8(); +f(); +2())
+}
+initRoundConstants(stack())
 
 #Pre-processing:
 #begin with the original message of length L bits
@@ -164,26 +177,32 @@ appendConst(+c(); +6(); +7(); +1(); +7(); +8(); +f(); +2())
 #For 256-bit input, this becomes 1 chunck of [data | 0x80 | 0x00 * 29 | 0x0100]
 
 #copy chunk into first 16 words w[0..15] of the message schedule array
-#stack0 = index to w[0]; stack1 = value to be stored
-w0(stack0();stack2())
-read32(stack1()) append()
-read32(stack1()) append()
-read32(stack1()) append()
-read32(stack1()) append()
-read32(stack1()) append()
-read32(stack1()) append()
-read32(stack1()) append()
-read32(stack1()) append()
-appendConst(+8(); +0(); +0(); +0(); +0(); +0(); +0(); +0())
-zero32(stack1())
-append()
-append()
-append()
-append()
-append()
-append()
-appendConst(+0(); +0(); +0(); +0(); +0(); +1(); +0(); +0())
+readMessage(stack)
+{
+	index()   {stack       }
+	value()   {index() >   }
+	newStack(){value() >1()}
 
+	w0(index();newStack())
+	read32(value()) append(index();value())
+	read32(value()) append(index();value())
+	read32(value()) append(index();value())
+	read32(value()) append(index();value())
+	read32(value()) append(index();value())
+	read32(value()) append(index();value())
+	read32(value()) append(index();value())
+	read32(value()) append(index();value())
+	appendConst(index();+8(); +0(); +0(); +0(); +0(); +0(); +0(); +0();newStack())
+	zero32(value())
+	append(index();value())
+	append(index();value())
+	append(index();value())
+	append(index();value())
+	append(index();value())
+	append(index();value())
+	appendConst(index();+0(); +0(); +0(); +0(); +0(); +1(); +0(); +0();newStack())
+}
+readMessage(stack())
 
 #Extend the first 16 words into the remaining 48 words w[16..63] of the message schedule array:
 
