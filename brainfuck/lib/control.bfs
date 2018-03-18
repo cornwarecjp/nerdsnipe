@@ -1,24 +1,28 @@
 ################################################################################
 
 #if(x) code1 else code2
-ifelse(x;code1;code2;temp0;temp1)
+#stack: 2 bytes
+ifelse(x;code1;code2;stack)
 {
+	t0(){stack}
+	t1(){stack >}
+
 	!
-	? temp0 0() +      #temp0 = 1
-	? temp1 0()        #temp1 = 0
-	? x     [          #if x
-	?           code1  #    code1
-	? temp0     -      #    temp0--
-	? x         [      #    while x
-	? temp1         +  #        temp1++
-	? x         -]     #        x--
-	? x     ]
-	? temp1 [          #while temp1
-	? x     +          #    x++
-	? temp1 -]         #    temp1--
-	? temp0 [          #if temp0
-	?           code2  #    code2
-	? temp0 -]         #    temp0--
+	? t0() 0() +      #t0 = 1
+	? t1() 0()        #t1 = 0
+	? x    [          #if x
+	?          code1  #    code1
+	? t0()     -      #    t0--
+	? x        [      #    while x
+	? t1()         +  #        temp1++
+	? x        -]     #        x--
+	? x    ]
+	? t1() [          #while t1
+	? x    +          #    x++
+	? t1() -]         #    t1--
+	? t0() [          #if t0
+	?          code2  #    code2
+	? t0() -]         #    t0--
 	?~
 }
 

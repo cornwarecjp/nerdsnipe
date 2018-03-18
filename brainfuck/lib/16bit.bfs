@@ -18,7 +18,7 @@ write16()  {write()   > write()   <}
 #stack: 2 bytes
 bool16(x; y; stack)
 {
-	or(x; x >; y; stack; stack >)
+	or(x; x >; y; stack)
 }
 
 #stack: 2 bytes
@@ -29,7 +29,7 @@ decr16(stack)
 
 	ifelse(lsb();;        #if lsb == 0
 		-                 #    msb--
-		;stack;stack >)
+		;stack)
 
 	!
 	? lsb() -             #lsb--
@@ -49,6 +49,6 @@ incr16(stack)
 
 	ifelse(lsb();;       #if lsb == 0
 		+                #msb++
-		;stack;stack >)
+		;stack)
 }
 

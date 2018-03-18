@@ -1,40 +1,45 @@
 ################################################################################
 
 #y = bool(x)
-bool(x;y;temp0)
+#stack: 1 byte
+bool(x;y;stack)
 {
 	!
 	? y     0()    #y = 0
 	? x     [      #while x != 0
 	? x     -      #x--
-	? temp0 +      #temp0++
+	? stack +      #stack++
 	? y     0() +  #y = 1
 	? x     ]
-	? temp0 [      #while temp0 != 0
-    ? temp0 -      #temp0--
+	? stack [      #while stack != 0
+    ? stack -      #stack--
 	? x     +      #x++
-	? temp0 ]
+	? stack ]
 	? ~
 }
 
 #z = x or y
-or(x;y;z;temp0;temp1)
+#stack: 2 bytes
+or(x;y;z;stack)
 {
-	bool(x;z;temp0)     #z = bool(x)
-	bool(y;temp0;temp1) #temp0 = bool(y)
+	t(){stack}
+	newStack(){stack >}
+
+	bool(x;z;t())          #z = bool(x)
+	bool(y;t();newStack()) #t = bool(y)
 
 	!
-	#temp0 = bool(z) + bool(y)
-	? z     [           #while z
-	? z     -           #z--
-	? temp0 +           #temp0++
-	? z     ]
+	#t = bool(z) + bool(y)
+	? z   [           #while z
+	? z   -           #z--
+	? t() +           #t++
+	? z   ]
 
 	#z = bool(bool(z) + bool(y))
-	? temp0 [           #while temp0
-	? temp0 -           #temp0--
-	? z     0() +       #z = 1
-	? temp0 ]
+	? t() [           #while t
+	? t() -           #t--
+	? z   0() +       #z = 1
+	? t() ]
 	? ~
 }
 
