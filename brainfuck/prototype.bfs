@@ -40,15 +40,8 @@ g(){f() >1()}
 h(){g() >1()}
 
 stack(){h() >1()}
-stack0(){stack()}
-stack1(){stack0() >1()}
-stack2(){stack1() >1()}
-stack3(){stack2() >1()}
-stack4(){stack3() >1()}
-stack5(){stack4() >1()}
-stack6(){stack5() >1()}
 
-A(){stack6() >1()}
+A(){stack() >8()}
 #Actual data in A starts 7 bytes later
 
 #In A:
