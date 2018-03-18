@@ -67,14 +67,14 @@ k0(x;stack){const8(x;+4();+0();stack)}
 #Initialize hash values:
 #(first 32 bits of the fractional parts of the square roots of the first 8 primes 2..19):
 
-const32(h0(); +6(); +a(); +0(); +9(); +e(); +6(); +6(); +7(); stack0())
-const32(h1(); +b(); +b(); +6(); +7(); +a(); +e(); +8(); +5(); stack0())
-const32(h2(); +3(); +c(); +6(); +e(); +f(); +3(); +7(); +2(); stack0())
-const32(h3(); +a(); +5(); +4(); +f(); +f(); +5(); +3(); +a(); stack0())
-const32(h4(); +5(); +1(); +0(); +e(); +5(); +2(); +7(); +f(); stack0())
-const32(h5(); +9(); +b(); +0(); +5(); +6(); +8(); +8(); +c(); stack0())
-const32(h6(); +1(); +f(); +8(); +3(); +d(); +9(); +a(); +b(); stack0())
-const32(h7(); +5(); +b(); +e(); +0(); +c(); +d(); +1(); +9(); stack0())
+const32(h0(); +6(); +a(); +0(); +9(); +e(); +6(); +6(); +7(); stack())
+const32(h1(); +b(); +b(); +6(); +7(); +a(); +e(); +8(); +5(); stack())
+const32(h2(); +3(); +c(); +6(); +e(); +f(); +3(); +7(); +2(); stack())
+const32(h3(); +a(); +5(); +4(); +f(); +f(); +5(); +3(); +a(); stack())
+const32(h4(); +5(); +1(); +0(); +e(); +5(); +2(); +7(); +f(); stack())
+const32(h5(); +9(); +b(); +0(); +5(); +6(); +8(); +8(); +c(); stack())
+const32(h6(); +1(); +f(); +8(); +3(); +d(); +9(); +a(); +b(); stack())
+const32(h7(); +5(); +b(); +e(); +0(); +c(); +d(); +1(); +9(); stack())
 
 
 append(index;value)
@@ -248,44 +248,44 @@ extendMessageScheduleArray(stack)
 		! t1() --------------- ?~            #t1 = w+i-15
 		arrayRetrieve32(t2();A();t1())       #t2 = w[i-15]
 		rightshift32(s0();t2();c3();         #s0 = (w[i-15] rightshift 3)
-			stack5();stack5() >;stack5() >>;stack5() >>>;stack6();stack6() >)
+			newStack())
 		rightrotate32(t3();t2();c18();       #t3 = (w[i-15] rightrotate 18)
-			stack5();stack5() >;stack5() >>;stack5() >>>;stack6();stack6() >)
+			newStack())
 		xor32(s0();s0();t3();                # s0 ^= (w[i-15] rightrotate 18)
-			stack5();stack5() >;stack5() >>;stack5() >>>;stack6();stack6() >;stack6() >>;stack6() >>>)
+			newStack())
 		rightrotate32(t3();t2();c7();        #t3 = (w[i-15] rightrotate 7)
-			stack5();stack5() >;stack5() >>;stack5() >>>;stack6();stack6() >)
+			newStack())
 		xor32(s0();s0();t3();                # s0 ^= (w[i-15] rightrotate 7)
-			stack5();stack5() >;stack5() >>;stack5() >>>;stack6();stack6() >;stack6() >>;stack6() >>>)
+			newStack())
 
 		#s1 := (w[i-2] rightrotate 17) xor (w[i-2] rightrotate 19) xor (w[i-2] rightshift 10)
 		copy8(wi(); t1(); newStack())
 		! t1() -- ?~                         #t1 = w+i-2
 		arrayRetrieve32(t2();A();t1())       #t2 = w[i-2]
 		rightshift32(s1();t2();c10();        #s1 = (w[i-2] rightshift 10)
-			stack5();stack5() >;stack5() >>;stack5() >>>;stack6();stack6() >)
+			newStack())
 		rightrotate32(t3();t2();c19();       #t3 = (w[i-2] rightrotate 19)
-			stack5();stack5() >;stack5() >>;stack5() >>>;stack6();stack6() >)
+			newStack())
 		xor32(s1();s1();t3();                # s1 ^= (w[i-2] rightrotate 19)
-			stack5();stack5() >;stack5() >>;stack5() >>>;stack6();stack6() >;stack6() >>;stack6() >>>)
+			newStack())
 		rightrotate32(t3();t2();c17();       #t3 = (w[i-2] rightrotate 17)
-			stack5();stack5() >;stack5() >>;stack5() >>>;stack6();stack6() >)
+			newStack())
 		xor32(s1();s1();t3();                # s1 ^= (w[i-2] rightrotate 17)
-			stack5();stack5() >;stack5() >>;stack5() >>>;stack6();stack6() >;stack6() >>;stack6() >>>)
+			newStack())
 
 		#w[i] := w[i-16] + s0 + w[i-7] + s1
 		ad32(s0();s1();                      # s0 += s1
-			stack5();stack5() >;stack5() >>;stack5() >>>;stack6())
+			newStack())
 		copy8(wi(); t1(); newStack())
 		! t1() ---------------- ?~           #t1 = w+i-16
 		arrayRetrieve32(t2();A();t1())       #t2 = w[i-16]
 		ad32(s0();t2();                      # s0 += w[i-16]
-			stack5();stack5() >;stack5() >>;stack5() >>>;stack6())
+			newStack())
 		copy8(wi(); t1(); newStack())
 		! t1() ------- ?~                    #t1 = w+i-7
 		arrayRetrieve32(t2();A();t1())       #t2 = w[i-7]
 		ad32(s0();t2();                      # s0 += w[i-7]
-			stack5();stack5() >;stack5() >>;stack5() >>>;stack6())
+			newStack())
 		arrayStore32(A();wi();s0())          #w[i] = s0
 
 		!? i_() - ?~
@@ -344,72 +344,72 @@ mainLoop(stack)
 
 		#s1 := (e rightrotate 6) xor (e rightrotate 11) xor (e rightrotate 25)
 		rightrotate32(s1();e();c6();        #s1 = (e rightrotate 6)
-			stack4();stack4() >;stack4() >>;stack4() >>>;stack5();stack5() >)
+			newStack())
 
 		rightrotate32(t2();e();c11();       #t2 = (e rightrotate 11)
-			stack5();stack5() >;stack5() >>;stack5() >>>;stack6();stack6() >)
+			newStack())
 		xor32(s1();s1();t2();               # s1 ^= (e rightrotate 11)
-			stack5();stack5() >;stack5() >>;stack5() >>>;stack6();stack6() >;stack6() >>;stack6() >>>)
+			newStack())
 
 		rightrotate32(t2();e();c25();       #t2 = (e rightrotate 25)
-			stack5();stack5() >;stack5() >>;stack5() >>>;stack6();stack6() >)
+			newStack())
 		xor32(s1();s1();t2();               # s1 ^= (e rightrotate 25)
-			stack5();stack5() >;stack5() >>;stack5() >>>;stack6();stack6() >;stack6() >>;stack6() >>>)
+			newStack())
 
 		#ch := (e and f) xor ((not e) and g)
 		not32(t2();e();newStack())          #t2 = not e
 		and32(ch();t2();g();                #ch = ((not e) and g)
-			stack5();stack5() >;stack5() >>;stack5() >>>;stack6();stack6() >;stack6() >>;stack6() >>>)
+			newStack())
 		and32(t2();e();f();                 #t2 = (e and f)
-			stack5();stack5() >;stack5() >>;stack5() >>>;stack6();stack6() >;stack6() >>;stack6() >>>)
+			newStack())
 		xor32(ch();ch();t2();               #ch ^= (e and f)
-			stack5();stack5() >;stack5() >>;stack5() >>>;stack6();stack6() >;stack6() >>;stack6() >>>)
+			newStack())
 
 		#temp1 := h + S1 + ch + k[i] + w[i]
 		copy32(h();temp1();newStack())
 		ad32(temp1();s1();
-			stack5();stack5() >;stack5() >>;stack5() >>>;stack6())
+			newStack())
 		ad32(temp1();ch();
-			stack5();stack5() >;stack5() >>;stack5() >>>;stack6())
+			newStack())
 
 		add8(t1();k();i();newStack())       #t1 = k+i
 		arrayRetrieve32(t2();A();t1())      #t2 = k[i]
 		ad32(temp1();t2();
-			stack5();stack5() >;stack5() >>;stack5() >>>;stack6())
+			newStack())
 
 		add8(t1();w();i();newStack())       #t1 = w+i
 		arrayRetrieve32(t2();A();t1())      #t2 = w[i]
 		ad32(temp1();t2();
-			stack5();stack5() >;stack5() >>;stack5() >>>;stack6())
+			newStack())
 
 		#S0 := (a rightrotate 2) xor (a rightrotate 13) xor (a rightrotate 22)
 		rightrotate32(s0();a();c2();        #s0 = (a rightrotate 2)
-			stack4();stack4() >;stack4() >>;stack4() >>>;stack5();stack5() >)
+			newStack())
 		rightrotate32(t2();a();c13();       #t2 = (a rightrotate 13)
-			stack4();stack4() >;stack4() >>;stack4() >>>;stack5();stack5() >)
+			newStack())
 		xor32(s0();s0();t2();               #s0 ^= (a rightrotate 13)
-			stack5();stack5() >;stack5() >>;stack5() >>>;stack6();stack6() >;stack6() >>;stack6() >>>)
+			newStack())
 		rightrotate32(t2();a();c22();       #t2 = (a rightrotate 22)
-			stack4();stack4() >;stack4() >>;stack4() >>>;stack5();stack5() >)
+			newStack())
 		xor32(s0();s0();t2();               #s0 ^= (a rightrotate 22)
-			stack5();stack5() >;stack5() >>;stack5() >>>;stack6();stack6() >;stack6() >>;stack6() >>>)
+			newStack())
 
 		#maj := (a and b) xor (a and c) xor (b and c)
 		and32(maj();a();b();                #maj = (a and b)
-			stack5();stack5() >;stack5() >>;stack5() >>>;stack6();stack6() >;stack6() >>;stack6() >>>)
+			newStack())
 		and32(t2();a();c();                 #t2 = (a and c)
-			stack5();stack5() >;stack5() >>;stack5() >>>;stack6();stack6() >;stack6() >>;stack6() >>>)
+			newStack())
 		xor32(maj();maj();t2();             #maj ^= (a and c)
-			stack5();stack5() >;stack5() >>;stack5() >>>;stack6();stack6() >;stack6() >>;stack6() >>>)
+			newStack())
 		and32(t2();b();c();                 #t2 = (b and c)
-			stack5();stack5() >;stack5() >>;stack5() >>>;stack6();stack6() >;stack6() >>;stack6() >>>)
+			newStack())
 		xor32(maj();maj();t2();             #maj ^= (b and c)
-			stack5();stack5() >;stack5() >>;stack5() >>>;stack6();stack6() >;stack6() >>;stack6() >>>)
+			newStack())
 
 		#temp2 := S0 + maj
 		copy32(s0();temp2();newStack())
 		ad32(temp2();maj();
-			stack5();stack5() >;stack5() >>;stack5() >>>;stack6())
+			newStack())
 
 		#h := g
 		move32(g();h())
@@ -420,7 +420,7 @@ mainLoop(stack)
 		#e := d + temp1
 		move32(d();e())
 		ad32(e();temp1();
-			stack5();stack5() >;stack5() >>;stack5() >>>;stack6())
+			newStack())
 		#d := c
 		move32(c();d())
 		#c := b
@@ -430,7 +430,7 @@ mainLoop(stack)
 		#a := temp1 + temp2
 		copy32(temp1();a();newStack())
 		ad32(a();temp2();
-			stack5();stack5() >;stack5() >>;stack5() >>>;stack6())
+			newStack())
 
 		!? i_() - ?~
 		)
@@ -440,28 +440,28 @@ mainLoop(stack())
 #Add the compressed chunk to the current hash value:
 #h0 := h0 + a
 ad32(h0();a();
-	stack5();stack5() >;stack5() >>;stack5() >>>;stack6())
+	stack())
 #h1 := h1 + b
 ad32(h1();b();
-	stack5();stack5() >;stack5() >>;stack5() >>>;stack6())
+	stack())
 #h2 := h2 + c
 ad32(h2();c();
-	stack5();stack5() >;stack5() >>;stack5() >>>;stack6())
+	stack())
 #h3 := h3 + d
 ad32(h3();d();
-	stack5();stack5() >;stack5() >>;stack5() >>>;stack6())
+	stack())
 #h4 := h4 + e
 ad32(h4();e();
-	stack5();stack5() >;stack5() >>;stack5() >>>;stack6())
+	stack())
 #h5 := h5 + f
 ad32(h5();f();
-	stack5();stack5() >;stack5() >>;stack5() >>>;stack6())
+	stack())
 #h6 := h6 + g
 ad32(h6();g();
-	stack5();stack5() >;stack5() >>;stack5() >>>;stack6())
+	stack())
 #h7 := h7 + h
 ad32(h7();h();
-	stack5();stack5() >;stack5() >>;stack5() >>>;stack6())
+	stack())
 
 #Produce the final hash value (big-endian):
 #hash := h0 append h1 append h2 append h3 append h4 append h5 append h6 append h7

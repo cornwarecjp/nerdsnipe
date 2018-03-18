@@ -64,53 +64,75 @@ copy32(x;y;temp0)
 }
 
 #y += x
-#tempx can be 8-bit
-ad32(y;x;temp0;temp1;temp2;temp3;temp4)
+#stack: 5 bytes
+ad32(y;x;stack)
 {
+	c0(){stack}
+	c1(){stack >}
+	newStack(){stack >>}
+
 	combineCarry()
 	{
 		!
-		? temp1 [     #if temp1
-		? temp0 0() + #    temp0 = 1
-		? temp1 -     #    temp1 = 0
-		? temp1 ]     #
+		? c1() [     #if c1
+		? c0() 0() + #    c0 = 1
+		? c1() -     #    c1 = 0
+		? c1() ]     #
 		?~
 	}
 
-	adc8(y >>>;x >>>;temp0;temp2;temp3;temp4) #temp0 = cout
+	adc8(y >>>;x >>>;c0();newStack();newStack() >;newStack() >>) #c0 = cout
 
-	adc8(y >> ;temp0;temp1;temp2;temp3;temp4) #temp0 = cin, temp1 = cout
-	adc8(y >> ;x >> ;temp0;temp2;temp3;temp4) #temp0 = cout
+	adc8(y >> ;c0() ;c1();newStack();newStack() >;newStack() >>) #c0 = cin, c1 = cout
+	adc8(y >> ;x >> ;c0();newStack();newStack() >;newStack() >>) #c0 = cout
 	combineCarry()
 
-	adc8(y >  ;temp0;temp1;temp2;temp3;temp4) #temp0 = cin, temp1 = cout
-	adc8(y >  ;x >  ;temp0;temp2;temp3;temp4) #temp0 = cout
+	adc8(y >  ;c0() ;c1();newStack();newStack() >;newStack() >>) #c0 = cin, c1 = cout
+	adc8(y >  ;x >  ;c0();newStack();newStack() >;newStack() >>) #c0 = cout
 	combineCarry()
 
-	adc8(y    ;temp0;temp1;temp2;temp3;temp4) #temp0 = cin, temp1 = cout
-	adc8(y    ;x    ;temp0;temp2;temp3;temp4) #temp0 = cout
+	adc8(y    ;c0() ;c1();newStack();newStack() >;newStack() >>) #c0 = cin, c1 = cout
+	adc8(y    ;x    ;c0();newStack();newStack() >;newStack() >>) #c0 = cout
 }
 
 #z = x ^ y
 #z may be x or y
-#tempx can be 8-bit
-xor32(z;x;y;temp0;temp1;temp2;temp3;temp4;temp5;temp6;temp7)
+#stack: 8 bytes
+xor32(z;x;y;stack)
 {
-	xor8(z    ;x    ;y    ;temp0;temp1;temp2;temp3;temp4;temp5;temp6;temp7)
-	xor8(z >  ;x >  ;y >  ;temp0;temp1;temp2;temp3;temp4;temp5;temp6;temp7)
-	xor8(z >> ;x >> ;y >> ;temp0;temp1;temp2;temp3;temp4;temp5;temp6;temp7)
-	xor8(z >>>;x >>>;y >>>;temp0;temp1;temp2;temp3;temp4;temp5;temp6;temp7)
+	temp0(){stack}
+	temp1(){stack >   }
+	temp2(){stack >>  }
+	temp3(){stack >>> }
+	temp4(){stack >>>>}
+	temp5(){stack >>>> >}
+	temp6(){stack >>>> >>}
+	temp7(){stack >>>> >>>}
+
+	xor8(z    ;x    ;y    ;temp0();temp1();temp2();temp3();temp4();temp5();temp6();temp7())
+	xor8(z >  ;x >  ;y >  ;temp0();temp1();temp2();temp3();temp4();temp5();temp6();temp7())
+	xor8(z >> ;x >> ;y >> ;temp0();temp1();temp2();temp3();temp4();temp5();temp6();temp7())
+	xor8(z >>>;x >>>;y >>>;temp0();temp1();temp2();temp3();temp4();temp5();temp6();temp7())
 }
 
 #z = x & y
 #z may be x or y
-#tempx can be 8-bit
-and32(z;x;y;temp0;temp1;temp2;temp3;temp4;temp5;temp6;temp7)
+#stack: 8 bytes
+and32(z;x;y;stack)
 {
-	and8(z    ;x    ;y    ;temp0;temp1;temp2;temp3;temp4;temp5;temp6;temp7)
-	and8(z >  ;x >  ;y >  ;temp0;temp1;temp2;temp3;temp4;temp5;temp6;temp7)
-	and8(z >> ;x >> ;y >> ;temp0;temp1;temp2;temp3;temp4;temp5;temp6;temp7)
-	and8(z >>>;x >>>;y >>>;temp0;temp1;temp2;temp3;temp4;temp5;temp6;temp7)
+	temp0(){stack}
+	temp1(){stack >   }
+	temp2(){stack >>  }
+	temp3(){stack >>> }
+	temp4(){stack >>>>}
+	temp5(){stack >>>> >}
+	temp6(){stack >>>> >>}
+	temp7(){stack >>>> >>>}
+
+	and8(z    ;x    ;y    ;temp0();temp1();temp2();temp3();temp4();temp5();temp6();temp7())
+	and8(z >  ;x >  ;y >  ;temp0();temp1();temp2();temp3();temp4();temp5();temp6();temp7())
+	and8(z >> ;x >> ;y >> ;temp0();temp1();temp2();temp3();temp4();temp5();temp6();temp7())
+	and8(z >>>;x >>>;y >>>;temp0();temp1();temp2();temp3();temp4();temp5();temp6();temp7())
 }
 
 #y = ~x
@@ -150,12 +172,16 @@ shr32(x;c;temp0;temp1;temp2;temp3)
 
 #x rr= 1; c=carry
 #c is 8-bit
-#temp0;temp1;temp2;temp3;temp4 can be 8-bit
-rr32(x;temp0;temp1;temp2;temp3;temp4)
+#stack: 5 bytes
+rr32(x;stack)
 {
+	c() {stack}
+	c2(){stack >}
+	newStack(){stack >>}
+
 	addCarry(c;dest)
 	{
-		*10(c;temp0) # c is now 000x0000
+		*10(c;newStack()) # c is now 000x0000
 		!
 		? c    [        #|dest += 8*c
 		? dest ++++++++ #|c = 0
@@ -164,41 +190,51 @@ rr32(x;temp0;temp1;temp2;temp3;temp4)
 		?~
 	}
 
-	shr8(x >>>;temp4;temp0;temp1;temp2)
-	shr8(x >> ;temp3;temp0;temp1;temp2)
-	addCarry(temp3;x >>>)
-	shr8(x >  ;temp3;temp0;temp1;temp2)
-	addCarry(temp3;x >> )
-	shr8(x    ;temp3;temp0;temp1;temp2)
-	addCarry(temp3;x >  )
-	addCarry(temp4;x    )
+	shr8(x >>>;c2();newStack();newStack() >;newStack() >>)
+	shr8(x >> ;c();newStack();newStack() >;newStack() >>)
+	addCarry(c();x >>>)
+	shr8(x >  ;c();newStack();newStack() >;newStack() >>)
+	addCarry(c();x >> )
+	shr8(x    ;c();newStack();newStack() >;newStack() >>)
+	addCarry(c();x >  )
+	addCarry(c2();x)
 }
 
 
 #z = x >> y
 #y is 8-bit
-#tempx can be 8-bit
-rightshift32(z;x;y;temp0;temp1;temp2;temp3;temp4;temp5)
+#stack: 6 bytes
+rightshift32(z;x;y;stack)
 {
-	copy32(x;z;temp0)
-	copy8(y;temp5;temp0)
-	while(temp5;
-		shr32(z;temp0;temp1;temp2;temp3;temp4)
-		decr8(temp5)
+	temp0(){stack}
+	temp1(){stack >   }
+	temp2(){stack >>  }
+	temp3(){stack >>> }
+	temp4(){stack >>>>}
+	temp5(){stack >>>> >   }
+
+	copy32(x;z;temp0())
+	copy8(y;temp5();temp0())
+	while(temp5();
+		shr32(z;temp0();temp1();temp2();temp3();temp4())
+		decr8(temp5())
 		)
 }
 
 
 #z = x rr y
 #y is 8-bit
-#tempx can be 8-bit
-rightrotate32(z;x;y;temp0;temp1;temp2;temp3;temp4;temp5)
+#stack: 6 bytes
+rightrotate32(z;x;y;stack)
 {
-	copy32(x;z;temp0)
-	copy8(y;temp5;temp0)
-	while(temp5;
-		rr32(z;temp0;temp1;temp2;temp3;temp4)
-		decr8(temp5)
+	count(){stack}
+	newStack(){stack >}
+
+	copy32(x;z;newStack())
+	copy8(y;count();newStack())
+	while(count();
+		rr32(z;newStack())
+		decr8(count())
 		)
 }
 
