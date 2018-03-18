@@ -151,32 +151,37 @@ ad8(y;x;stack)
 }
 
 #y += x; c = carry
-adc8(y;x;c;temp0;temp1;temp2)
+#stack: 3 bytes
+adc8(y;x;c;stack)
 {
-	0(c)     #c = 0
-	0(temp0) #temp0 = 0
-	0(temp1) #temp1 = 0
-	0(temp2) #temp2 = 0
+	t0(){stack}
+	t1(){stack >}
+	t2(){stack >>}
+
+	0(c)    #c = 0
+	0(t0()) #t0 = 0
+	0(t1()) #t1 = 0
+	0(t2()) #t2 = 0
 
 	!
-	? x     [                     #while x
-	? x     -                     #    x--
-	? temp0 +                     #    temp0++
-	? y     +                     #    y++
-	?       copy8F(y;temp1;temp2) #    temp1 = y    |temp2 = (y == 0)
-	? temp2 +                     #    temp2 = 1    |
-	? temp1 [                     #    if temp1     |
-	? temp2 -                     #        temp2 = 0|
-	? temp1 0()                   #                 |
-	? temp1 ]                     #                 |
-	? temp2 [                     #    if temp2
-	? c     +                     #        c = 1
-	? temp2 -                     #
-	? temp2 ]                     #
-	? x     ]                     #
+	? x    [                   #while x
+	? x    -                   #    x--
+	? t0() +                   #    t0++
+	? y    +                   #    y++
+	?      copy8F(y;t1();t2()) #    t1 = y    |t2 = (y == 0)
+	? t2() +                   #    t2 = 1    |
+	? t1() [                   #    if t1     |
+	? t2() -                   #        t2 = 0|
+	? t1() 0()                 #              |
+	? t1() ]                   #              |
+	? t2() [                   #    if t2
+	? c    +                   #        c = 1
+	? t2() -                   #
+	? t2() ]                   #
+	? x    ]                   #
 	?~
 
-	move8F(temp0;x)
+	move8F(t0();x)
 }
 
 #z = y + x

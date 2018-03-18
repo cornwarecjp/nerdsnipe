@@ -82,18 +82,18 @@ ad32(y;x;stack)
 		?~
 	}
 
-	adc8(y >>>;x >>>;c0();newStack();newStack() >;newStack() >>) #c0 = cout
+	adc8(y >>>;x >>>;c0();newStack()) #c0 = cout
 
-	adc8(y >> ;c0() ;c1();newStack();newStack() >;newStack() >>) #c0 = cin, c1 = cout
-	adc8(y >> ;x >> ;c0();newStack();newStack() >;newStack() >>) #c0 = cout
+	adc8(y >> ;c0() ;c1();newStack()) #c0 = cin, c1 = cout
+	adc8(y >> ;x >> ;c0();newStack()) #c0 = cout
 	combineCarry()
 
-	adc8(y >  ;c0() ;c1();newStack();newStack() >;newStack() >>) #c0 = cin, c1 = cout
-	adc8(y >  ;x >  ;c0();newStack();newStack() >;newStack() >>) #c0 = cout
+	adc8(y >  ;c0() ;c1();newStack()) #c0 = cin, c1 = cout
+	adc8(y >  ;x >  ;c0();newStack()) #c0 = cout
 	combineCarry()
 
-	adc8(y    ;c0() ;c1();newStack();newStack() >;newStack() >>) #c0 = cin, c1 = cout
-	adc8(y    ;x    ;c0();newStack();newStack() >;newStack() >>) #c0 = cout
+	adc8(y    ;c0() ;c1();newStack()) #c0 = cin, c1 = cout
+	adc8(y    ;x    ;c0();newStack()) #c0 = cout
 }
 
 #z = x ^ y

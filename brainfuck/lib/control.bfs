@@ -14,7 +14,7 @@ ifelse(x;code1;code2;stack)
 	?          code1  #    code1
 	? t0()     -      #    t0--
 	? x        [      #    while x
-	? t1()         +  #        temp1++
+	? t1()         +  #        t1++
 	? x        -]     #        x--
 	? x    ]
 	? t1() [          #while t1
