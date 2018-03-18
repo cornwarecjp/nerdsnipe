@@ -45,25 +45,26 @@ move8F(x;y)
 
 
 #y = x
-copy8(x;y;temp0)
+#stack: 1 byte
+copy8(x;y;stack)
 {
-	0(temp0)
-	copy8F(x;y;temp0)
+	0(stack)
+	copy8F(x;y;stack)
 }
-#same, but requires zero-value temp0
-copy8F(x;y;temp0)
+#same, but requires zero-value stack
+copy8F(x;y;stack)
 {
 	!
 	? y     0()   #y = 0
 	? x     [     #while x
 	? x     -     #    x--
 	? y     +     #    y++
-	? temp0 +     #    temp0++
+	? stack +     #    stack++
 	? x     ]
-	? temp0 [     #while temp0
-	? temp0 -     #    temp0--
+	? stack [     #while stack
+	? stack -     #    stack--
 	? x     +     #    x++
-	? temp0 ]
+	? stack ]
 	? ~
 }
 
@@ -86,62 +87,67 @@ copy8F(x;y;temp0)
 +d(){+++++++++++++}
 +e(){++++++++++++++}
 +f(){+++++++++++++++}
-*10(x;temp0)
+#stack: 1 byte
+*10(x;stack)
 {
 	!
-	?       move8(x;temp0)   #temp0 = x; x = 0
-	? temp0 [                #while temp0 != 0
-	? temp0 -                #    temp0--
+	?       move8(x;stack)   #stack = x; x = 0
+	? stack [                #while stack != 0
+	? stack -                #    stack--
 	? x     ++++++++++++++++ #    x += 0x10
-	? temp0 ]
+	? stack ]
 	? ~
 }
 
-const8(x;a;b;temp0)
+#stack: 1 byte
+const8(x;a;b;stack)
 {
 	!
 	? x 0() a
-	?   *10(x;temp0)
+	?   *10(x;stack)
 	? x b
 	?~
 }
 
 #y -= x
-st8(y;x;temp0)
+#stack: 1 byte
+st8(y;x;stack)
 {
 	!
-	? temp0 0()   #temp0 = 0
+	? stack 0()   #stack = 0
 	? x     [     #while x
 	? x     -     #    x--
 	? y     -     #    y--
-	? temp0 +     #    temp0++
+	? stack +     #    stack++
 	? x     ]
-	? temp0 [     #while temp0
-	? temp0 -     #    temp0--
+	? stack [     #while stack
+	? stack -     #    stack--
 	? x     +     #    x++
-	? temp0 ]
+	? stack ]
 	? ~
 }
 
 #z = y - x
-subtract8(z;y;x;temp0)
+#stack: 1 byte
+subtract8(z;y;x;stack)
 {
-	copy8(y;z;temp0)
-	st8(z;x;temp0)
+	copy8(y;z;stack)
+	st8(z;x;stack)
 }
 
 #y += x
-ad8(y;x;temp0)
+#stack: 1 byte
+ad8(y;x;stack)
 {
 	!
-	? temp0 0()   #temp0 = 0
+	? stack 0()   #stack = 0
 	? x     [     #while x
 	? x     -     #    x--
 	? y     +     #    y++
-	? temp0 +     #    temp0++
+	? stack +     #    stack++
 	? x     ]
 	? ~
-	move8F(temp0;x)
+	move8F(stack;x)
 }
 
 #y += x; c = carry
@@ -174,39 +180,46 @@ adc8(y;x;c;temp0;temp1;temp2)
 }
 
 #z = y + x
-add8(z;y;x;temp0)
+#stack: 1 byte
+add8(z;y;x;stack)
 {
-	copy8(y;z;temp0)
-	ad8(z;x;temp0)
+	copy8(y;z;stack)
+	ad8(z;x;stack)
 }
 
 #z = x OP y
 #z may be x or y
 #OP takes xbit,ybit as input and stores output in zbit
 #OP must set xbit,ybit to 0
-bitwise8(z;x;y;OP;xbit;ybit;zbit;temp0;temp1;temp2;temp3;temp4)
+#stack: 6 bytes
+bitwise8(z;x;y;OP;xbit;ybit;zbit;stack)
 {
-	copy8(x;temp0;temp2)#temp0 = x
-	copy8(y;temp1;temp2)#temp1 = y
-	zero8(z)            #z = 0
+	xCopy(){stack}
+	yCopy(){stack >}
+	count(){stack >>}
+	newStack(){stack >>>}
+
+	copy8(x;xCopy();newStack())#xCopy = x
+	copy8(y;yCopy();newStack())#yCopy = y
+	zero8(z)              #z = 0
 
 	!
-	? zero8(temp2)     #temp2 = 0
-	? temp2 +8()       #temp2 = 8  |repeat 8 times:
-	? while(temp2;     #while temp2|
-	?     decr8(temp2) #    temp2--|
+	? zero8(count())     #count = 0
+	? count() +8()       #count = 8  |repeat 8 times:
+	? while(count();     #while count|
+	?     decr8(count()) #    count--|
 
-	?     shr8(z;temp3;temp4;xbit;zbit)     #z /= 2
-	?     shr8(temp0;xbit;temp3;temp4;zbit) #temp0 /= 2; xbit = carry
-	?     shr8(temp1;ybit;temp3;temp4;zbit) #temp1 /= 2; ybit = carry
+	?     shr8(z;xbit;newStack())       #z /= 2
+	?     shr8(xCopy();xbit;newStack()) #xCopy /= 2; xbit = carry
+	?     shr8(yCopy();ybit;newStack()) #yCopy /= 2; ybit = carry
 
 	?     OP
 
-	?     *10(zbit;temp3) #    zbit *= 0x10|if zbit:
-	?     zbit [          #    while zbit  |    z += 0x80
-	?     zbit -          #        zbit--  |
-	?     z    +8()       #        z += 8  |
-	?     zbit ]          #                |
+	?     *10(zbit;newStack()) #    zbit *= 0x10|if zbit:
+	?     zbit [               #    while zbit  |    z += 0x80
+	?     zbit -               #        zbit--  |
+	?     z    +8()            #        z += 8  |
+	?     zbit ]               #                |
 	?     )
 
 	?~
@@ -214,11 +227,13 @@ bitwise8(z;x;y;OP;xbit;ybit;zbit;temp0;temp1;temp2;temp3;temp4)
 
 #z = x ^ y
 #z may be x or y
-xor8(z;x;y;temp0;temp1;temp2;temp3;temp4;temp5;temp6;temp7)
+#stack: 9 bytes
+xor8(z;x;y;stack)
 {
-	xbit(){temp0}
-	ybit(){temp1}
-	zbit(){temp2}
+	xbit(){stack}
+	ybit(){stack >}
+	zbit(){stack >>}
+	newStack(){stack >>>}
 
 	OP()
 	{
@@ -240,16 +255,18 @@ xor8(z;x;y;temp0;temp1;temp2;temp3;temp4;temp5;temp6;temp7)
 		?~
 	}
 
-	bitwise8(z;x;y;OP();xbit();ybit();zbit();temp3;temp4;temp5;temp6;temp7)
+	bitwise8(z;x;y;OP();xbit();ybit();zbit();newStack())
 }
 
 #z = x & y
 #z may be x or y
-and8(z;x;y;temp0;temp1;temp2;temp3;temp4;temp5;temp6;temp7)
+#stack: 9 bytes
+and8(z;x;y;stack)
 {
-	xbit(){temp0}
-	ybit(){temp1}
-	zbit(){temp2}
+	xbit(){stack}
+	ybit(){stack >}
+	zbit(){stack >>}
+	newStack(){stack >>>}
 
 	OP()
 	{
@@ -266,51 +283,57 @@ and8(z;x;y;temp0;temp1;temp2;temp3;temp4;temp5;temp6;temp7)
 		?~
 	}
 
-	bitwise8(z;x;y;OP();xbit();ybit();zbit();temp3;temp4;temp5;temp6;temp7)
+	bitwise8(z;x;y;OP();xbit();ybit();zbit();newStack())
 }
 
 #y = not x
-not8(y;x;temp0)
+#stack: 1 byte
+not8(y;x;stack)
 {
-	copy8(x;temp0;y) #temp0 = x; y = 0
+	copy8(x;stack;y) #stack = x; y = 0
 
 	!
-	? temp0 +
-	? temp0 [
-	? temp0 +
+	? stack +
+	? stack [
+	? stack +
 	? y     +
-	? temp0 ]
+	? stack ]
 	?~
 }
 
 #x >>= 1; c=carry
-shr8(x;c;temp0;temp1;temp2)
+#stack: 3 bytes
+shr8(x;c;stack)
 {
-	copy8(x;temp0;temp1)              #temp0 = x; temp1 = 0
-	zero8(c)                          #c = 0
-	zero8(temp2)                      #temp2 = 0
+	t0(){stack}
+	t1(){stack >}
+	newStack(){stack >>}
+
+	copy8(x;t0();t1())                  #t0 = x; t1 = 0
+	zero8(c)                            #c = 0
+	zero8(newStack())                   #newStack = 0
 
 	!
-	? temp0 [                         #while temp0:
+	? t0() [                            #while t0:
 
-	? c     zero8() +                 #    c = 1        |c = temp0==1
-	?       copy8F(temp0;temp1;temp2) #    temp1 = temp0|
-	? temp1 -                         #    temp1--      |
-	? temp1 [                         #    if temp1:    |
-	?       zero8(c)                  #        c = 0    |
-	?       zero8(temp1)              #                 |
-	? temp1 ]                         #                 |
+	? c     zero8() +                    #    c = 1     |c = t0==1
+	?       copy8F(t0();t1();newStack()) #    t1 = t0   |
+	? t1() -                             #    t1--      |
+	? t1() [                             #    if t1:    |
+	?       zero8(c)                     #        c = 0 |
+	?       zero8(t1())                  #              |
+	? t1() ]                             #              |
 
-	? x     -                         #    x--
-	? temp0 --                        #    temp0 -= 2
+	? x     -                            #    x--
+	? t0() --                            #    t0 -= 2
 
-	?       copy8F(c;temp1;temp2)     #    temp1 = c    |if c:
-	? temp1 [                         #    if temp1:    |    temp0 = 0
-	?       zero8(temp0)              #        temp0 = 0|
-	? temp1 -                         #                 |
-	? temp1 ]                         #                 |
+	?       copy8F(c;t1();newStack())    #    t1 = c    |if c:
+	? t1() [                             #    if t1:    |    t0 = 0
+	?       zero8(t0())                  #        t0 = 0|
+	? t1() -                             #              |
+	? t1() ]                             #              |
 
-	? temp0 ]
+	? t0() ]
 	?~
 }
 

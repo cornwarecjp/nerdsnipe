@@ -98,42 +98,24 @@ ad32(y;x;stack)
 
 #z = x ^ y
 #z may be x or y
-#stack: 8 bytes
+#stack: 9 bytes
 xor32(z;x;y;stack)
 {
-	temp0(){stack}
-	temp1(){stack >   }
-	temp2(){stack >>  }
-	temp3(){stack >>> }
-	temp4(){stack >>>>}
-	temp5(){stack >>>> >}
-	temp6(){stack >>>> >>}
-	temp7(){stack >>>> >>>}
-
-	xor8(z    ;x    ;y    ;temp0();temp1();temp2();temp3();temp4();temp5();temp6();temp7())
-	xor8(z >  ;x >  ;y >  ;temp0();temp1();temp2();temp3();temp4();temp5();temp6();temp7())
-	xor8(z >> ;x >> ;y >> ;temp0();temp1();temp2();temp3();temp4();temp5();temp6();temp7())
-	xor8(z >>>;x >>>;y >>>;temp0();temp1();temp2();temp3();temp4();temp5();temp6();temp7())
+	xor8(z    ;x    ;y    ;stack)
+	xor8(z >  ;x >  ;y >  ;stack)
+	xor8(z >> ;x >> ;y >> ;stack)
+	xor8(z >>>;x >>>;y >>>;stack)
 }
 
 #z = x & y
 #z may be x or y
-#stack: 8 bytes
+#stack: 9 bytes
 and32(z;x;y;stack)
 {
-	temp0(){stack}
-	temp1(){stack >   }
-	temp2(){stack >>  }
-	temp3(){stack >>> }
-	temp4(){stack >>>>}
-	temp5(){stack >>>> >}
-	temp6(){stack >>>> >>}
-	temp7(){stack >>>> >>>}
-
-	and8(z    ;x    ;y    ;temp0();temp1();temp2();temp3();temp4();temp5();temp6();temp7())
-	and8(z >  ;x >  ;y >  ;temp0();temp1();temp2();temp3();temp4();temp5();temp6();temp7())
-	and8(z >> ;x >> ;y >> ;temp0();temp1();temp2();temp3();temp4();temp5();temp6();temp7())
-	and8(z >>>;x >>>;y >>>;temp0();temp1();temp2();temp3();temp4();temp5();temp6();temp7())
+	and8(z    ;x    ;y    ;stack)
+	and8(z >  ;x >  ;y >  ;stack)
+	and8(z >> ;x >> ;y >> ;stack)
+	and8(z >>>;x >>>;y >>>;stack)
 }
 
 #y = ~x
@@ -165,12 +147,12 @@ shr32(x;c;stack)
 		?~
 	}
 
-	shr8(x >>>;c   ;newStack();newStack() >;newStack() >>)
-	shr8(x >> ;c2();newStack();newStack() >;newStack() >>)
+	shr8(x >>>;c   ;newStack())
+	shr8(x >> ;c2();newStack())
 	addCarry(c2();x >>>)
-	shr8(x >  ;c2();newStack();newStack() >;newStack() >>)
+	shr8(x >  ;c2();newStack())
 	addCarry(c2();x >> )
-	shr8(x    ;c2();newStack();newStack() >;newStack() >>)
+	shr8(x    ;c2();newStack())
 	addCarry(c2();x >  )
 }
 
@@ -194,12 +176,12 @@ rr32(x;stack)
 		?~
 	}
 
-	shr8(x >>>;c2();newStack();newStack() >;newStack() >>)
-	shr8(x >> ;c();newStack();newStack() >;newStack() >>)
+	shr8(x >>>;c2();newStack())
+	shr8(x >> ;c();newStack())
 	addCarry(c();x >>>)
-	shr8(x >  ;c();newStack();newStack() >;newStack() >>)
+	shr8(x >  ;c();newStack())
 	addCarry(c();x >> )
-	shr8(x    ;c();newStack();newStack() >;newStack() >>)
+	shr8(x    ;c();newStack())
 	addCarry(c();x >  )
 	addCarry(c2();x)
 }
