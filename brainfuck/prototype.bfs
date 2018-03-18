@@ -40,14 +40,17 @@ g(){f() >1()}
 h(){g() >1()}
 
 stack(){h() >1()}
+#Reserved 32 bytes for the stack
 
 A(){stack() >8()}
 #Actual data in A starts 7 bytes later
 
 #In A:
 #w = 0x00..0x3f
+#stack: 1 byte
 w0(x;stack){zero8(x)}
 #k = 0x40..0x7f
+#stack: 1 byte
 k0(x;stack){const8(x;+4();+0();stack)}
 
 #Note 1: All variables are 32 bit unsigned integers and addition is calculated modulo 232
@@ -60,6 +63,7 @@ k0(x;stack){const8(x;+4();+0();stack)}
 #Initialize hash values:
 #(first 32 bits of the fractional parts of the square roots of the first 8 primes 2..19):
 
+#stack: 1 byte
 const32(h0(); +6(); +a(); +0(); +9(); +e(); +6(); +6(); +7(); stack())
 const32(h1(); +b(); +b(); +6(); +7(); +a(); +e(); +8(); +5(); stack())
 const32(h2(); +3(); +c(); +6(); +e(); +f(); +3(); +7(); +2(); stack())
@@ -77,6 +81,7 @@ append(index;value)
 	index +
 	?~
 }
+#stack: 1 byte
 appendConst(index;a;b;c;d;e;f;g;h;stack)
 {
 	value(){stack}
@@ -87,6 +92,7 @@ appendConst(index;a;b;c;d;e;f;g;h;stack)
 
 #Initialize array of round constants:
 #(first 32 bits of the fractional parts of the cube roots of the first 64 primes 2..311):
+#stack: 3 bytes
 initRoundConstants(stack)
 {
 	index()   {stack    }
@@ -170,6 +176,7 @@ initRoundConstants(stack())
 #For 256-bit input, this becomes 1 chunck of [data | 0x80 | 0x00 * 29 | 0x0100]
 
 #copy chunk into first 16 words w[0..15] of the message schedule array
+#stack: 3 bytes
 readMessage(stack)
 {
 	index()   {stack       }
@@ -198,6 +205,7 @@ readMessage(stack)
 readMessage(stack())
 
 #Extend the first 16 words into the remaining 48 words w[16..63] of the message schedule array:
+#stack: 28 bytes
 extendMessageScheduleArray(stack)
 {
 	#8-bits:
@@ -217,7 +225,7 @@ extendMessageScheduleArray(stack)
 	t2() {stack >>>> >>>> >>> }
 	t3() {t2() >1()}
 
-	#Rest:
+	#Rest (9 bytes):
 	newStack(){t3() >1()}
 
 	const8(c3() ;+0();+3();newStack())
@@ -287,6 +295,7 @@ extendMessageScheduleArray(stack)
 extendMessageScheduleArray(stack())
 
 #Initialize working variables to current hash value:
+#stack: 1 byte
 copy32(h0(); a(); stack())
 copy32(h1(); b(); stack())
 copy32(h2(); c(); stack())
@@ -298,6 +307,7 @@ copy32(h7(); h(); stack())
 
 
 #    Compression function main loop:
+#stack: 25 bytes
 mainLoop(stack)
 {
 	#8-bits:
@@ -317,7 +327,7 @@ mainLoop(stack)
 	#32-bits:
 	t2() {stack >>>> >>>> >>>>}
 
-	#Rest:
+	#Rest (9 bytes):
 	newStack(){t2() >1()}
 
 	k0    (k()  ;          newStack())
@@ -431,6 +441,7 @@ mainLoop(stack)
 mainLoop(stack())
 
 #Add the compressed chunk to the current hash value:
+#stack: 5 bytes
 #h0 := h0 + a
 ad32(h0();a();
 	stack())
