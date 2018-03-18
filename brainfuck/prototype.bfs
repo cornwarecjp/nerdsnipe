@@ -205,70 +205,93 @@ readMessage(stack)
 readMessage(stack())
 
 #Extend the first 16 words into the remaining 48 words w[16..63] of the message schedule array:
+extendMessageScheduleArray(stack)
+{
+	#8-bits:
+	c3() {stack     }
+	c7() {stack >   }
+	c18(){stack >>  }
+	c17(){stack >>> }
+	c19(){stack >>>>}
+	c10(){stack >>>> >  }
+	c64(){stack >>>> >> }
+	w()  {stack >>>> >>>}
+	i_() {stack >>>> >>>>}
+	wi() {stack >>>> >>>> >}
+	t1() {stack >>>> >>>> >>}
 
-const8(stack1()    ;+0();+3();stack3()) #stack1[0] = 3
-const8(stack1() >  ;+0();+7();stack3()) #stack1[1] = 7
-const8(stack1() >> ;+1();+2();stack3()) #stack1[2] = 18
-const8(stack1() >>>;+1();+1();stack3()) #stack1[3] = 17
-const8(stack2()    ;+1();+3();stack3()) #stack2[0] = 19
-const8(stack2() >  ;+0();+a();stack3()) #stack2[1] = 10
-const8(stack2() >> ;+4();+0();stack3()) #stack2[2] = 64
-w0    (stack2() >>>;          stack3()) #stack2[3] = w
+	#32-bits:
+	t2() {stack >>>> >>>> >>>}
+	t3() {t2() >1()}
 
-#for i from 16 to 63
-const8(stack0();+3();+0();stack3()) #stack0[0] = 64 - i
-while(stack0();
-	subtract8(stack0() >;stack2() >>; stack0(); stack0() >>>) #stack0[1] = i
-	#write8(stack0() >)
-	ad8(stack0() >; stack2() >>>; stack3())                   #stack0[1] = w+i
+	#Rest:
+	newStack(){t3() >1()}
 
-	#s0 := (w[i-15] rightrotate 7) xor (w[i-15] rightrotate 18) xor (w[i-15] rightshift 3)
-	copy8(stack0() >; stack0() >>; stack0() >>>)
-	! stack0() >> --------------- ?~             #stack0[2] = w+i-15
-	arrayRetrieve32(stack3();A();stack0() >>)    #stack3 = w[i-15]
-	rightshift32(s0();stack3();stack1();         #s0 = (w[i-15] rightshift 3)
-		stack5();stack5() >;stack5() >>;stack5() >>>;stack6();stack6() >)
-	rightrotate32(stack4();stack3();stack1() >>; #stack4 = (w[i-15] rightrotate 18)
-		stack5();stack5() >;stack5() >>;stack5() >>>;stack6();stack6() >)
-	xor32(s0();s0();stack4();                    # s0 ^= (w[i-15] rightrotate 18)
-		stack5();stack5() >;stack5() >>;stack5() >>>;stack6();stack6() >;stack6() >>;stack6() >>>)
-	rightrotate32(stack4();stack3();stack1() >; #stack4 = (w[i-15] rightrotate 7)
-		stack5();stack5() >;stack5() >>;stack5() >>>;stack6();stack6() >)
-	xor32(s0();s0();stack4();                    # s0 ^= (w[i-15] rightrotate 7)
-		stack5();stack5() >;stack5() >>;stack5() >>>;stack6();stack6() >;stack6() >>;stack6() >>>)
+	const8(c3() ;+0();+3();newStack())
+	const8(c7() ;+0();+7();newStack())
+	const8(c18();+1();+2();newStack())
+	const8(c17();+1();+1();newStack())
+	const8(c19();+1();+3();newStack())
+	const8(c10();+0();+a();newStack())
+	const8(c64();+4();+0();newStack())
+	w0    (w()  ;          newStack())
 
-	#s1 := (w[i-2] rightrotate 17) xor (w[i-2] rightrotate 19) xor (w[i-2] rightshift 10)
-	copy8(stack0() >; stack0() >>; stack0() >>>)
-	! stack0() >> -- ?~                       #stack0[2] = w+i-2
-	arrayRetrieve32(stack3();A();stack0() >>) #stack3 = w[i-2]
-	rightshift32(s1();stack3();stack2() >;       #s1 = (w[i-2] rightshift 10)
-		stack5();stack5() >;stack5() >>;stack5() >>>;stack6();stack6() >)
-	rightrotate32(stack4();stack3();stack2(); #stack4 = (w[i-2] rightrotate 19)
-		stack5();stack5() >;stack5() >>;stack5() >>>;stack6();stack6() >)
-	xor32(s1();s1();stack4();                    # s1 ^= (w[i-2] rightrotate 19)
-		stack5();stack5() >;stack5() >>;stack5() >>>;stack6();stack6() >;stack6() >>;stack6() >>>)
-	rightrotate32(stack4();stack3();stack1() >>>;#stack4 = (w[i-2] rightrotate 17)
-		stack5();stack5() >;stack5() >>;stack5() >>>;stack6();stack6() >)
-	xor32(s1();s1();stack4();                    # s1 ^= (w[i-2] rightrotate 17)
-		stack5();stack5() >;stack5() >>;stack5() >>>;stack6();stack6() >;stack6() >>;stack6() >>>)
+	#for i from 16 to 63
+	const8(i_();+3();+0();newStack()) #i_ = 64 - i
+	while(i_();
+		subtract8(wi();c64(); i_(); newStack())
+		#write8(wi())
+		ad8(wi(); w(); newStack())           #wi = w+i
 
-	#w[i] := w[i-16] + s0 + w[i-7] + s1
-	ad32(s0();s1();                           # s0 += s1
-		stack5();stack5() >;stack5() >>;stack5() >>>;stack6())
-	copy8(stack0() >; stack0() >>; stack0() >>>)
-	! stack0() >> ---------------- ?~         #stack0[2] = w+i-16
-	arrayRetrieve32(stack3();A();stack0() >>) #stack3 = w[i-16]
-	ad32(s0();stack3();                       # s0 += w[i-16]
-		stack5();stack5() >;stack5() >>;stack5() >>>;stack6())
-	copy8(stack0() >; stack0() >>; stack0() >>>)
-	! stack0() >> ------- ?~                  #stack0[2] = w+i-7
-	arrayRetrieve32(stack3();A();stack0() >>) #stack3 = w[i-7]
-	ad32(s0();stack3();                       # s0 += w[i-7]
-		stack5();stack5() >;stack5() >>;stack5() >>>;stack6())
-	arrayStore32(A();stack0() >;s0())         #w[i] = s0
+		#s0 := (w[i-15] rightrotate 7) xor (w[i-15] rightrotate 18) xor (w[i-15] rightshift 3)
+		copy8(wi(); t1(); newStack())
+		! t1() --------------- ?~            #t1 = w+i-15
+		arrayRetrieve32(t2();A();t1())       #t2 = w[i-15]
+		rightshift32(s0();t2();c3();         #s0 = (w[i-15] rightshift 3)
+			stack5();stack5() >;stack5() >>;stack5() >>>;stack6();stack6() >)
+		rightrotate32(t3();t2();c18();       #t3 = (w[i-15] rightrotate 18)
+			stack5();stack5() >;stack5() >>;stack5() >>>;stack6();stack6() >)
+		xor32(s0();s0();t3();                # s0 ^= (w[i-15] rightrotate 18)
+			stack5();stack5() >;stack5() >>;stack5() >>>;stack6();stack6() >;stack6() >>;stack6() >>>)
+		rightrotate32(t3();t2();c7();        #t3 = (w[i-15] rightrotate 7)
+			stack5();stack5() >;stack5() >>;stack5() >>>;stack6();stack6() >)
+		xor32(s0();s0();t3();                # s0 ^= (w[i-15] rightrotate 7)
+			stack5();stack5() >;stack5() >>;stack5() >>>;stack6();stack6() >;stack6() >>;stack6() >>>)
 
-	!? stack0() - ?~
-	)
+		#s1 := (w[i-2] rightrotate 17) xor (w[i-2] rightrotate 19) xor (w[i-2] rightshift 10)
+		copy8(wi(); t1(); newStack())
+		! t1() -- ?~                         #t1 = w+i-2
+		arrayRetrieve32(t2();A();t1())       #t2 = w[i-2]
+		rightshift32(s1();t2();c10();        #s1 = (w[i-2] rightshift 10)
+			stack5();stack5() >;stack5() >>;stack5() >>>;stack6();stack6() >)
+		rightrotate32(t3();t2();c19();       #t3 = (w[i-2] rightrotate 19)
+			stack5();stack5() >;stack5() >>;stack5() >>>;stack6();stack6() >)
+		xor32(s1();s1();t3();                # s1 ^= (w[i-2] rightrotate 19)
+			stack5();stack5() >;stack5() >>;stack5() >>>;stack6();stack6() >;stack6() >>;stack6() >>>)
+		rightrotate32(t3();t2();c17();       #t3 = (w[i-2] rightrotate 17)
+			stack5();stack5() >;stack5() >>;stack5() >>>;stack6();stack6() >)
+		xor32(s1();s1();t3();                # s1 ^= (w[i-2] rightrotate 17)
+			stack5();stack5() >;stack5() >>;stack5() >>>;stack6();stack6() >;stack6() >>;stack6() >>>)
+
+		#w[i] := w[i-16] + s0 + w[i-7] + s1
+		ad32(s0();s1();                      # s0 += s1
+			stack5();stack5() >;stack5() >>;stack5() >>>;stack6())
+		copy8(wi(); t1(); newStack())
+		! t1() ---------------- ?~           #t1 = w+i-16
+		arrayRetrieve32(t2();A();t1())       #t2 = w[i-16]
+		ad32(s0();t2();                      # s0 += w[i-16]
+			stack5();stack5() >;stack5() >>;stack5() >>>;stack6())
+		copy8(wi(); t1(); newStack())
+		! t1() ------- ?~                    #t1 = w+i-7
+		arrayRetrieve32(t2();A();t1())       #t2 = w[i-7]
+		ad32(s0();t2();                      # s0 += w[i-7]
+			stack5();stack5() >;stack5() >>;stack5() >>>;stack6())
+		arrayStore32(A();wi();s0())          #w[i] = s0
+
+		!? i_() - ?~
+		)
+}
+extendMessageScheduleArray(stack())
 
 #Initialize working variables to current hash value:
 copy32(h0(); a(); stack0())
