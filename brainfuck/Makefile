@@ -22,5 +22,5 @@ prototype: prototype.c
 	gcc -O0 -o prototype prototype.c
 
 clean:
-	-rm prototype.bf prototype.bfi
+	-rm prototype.bf prototype.bfi prototype prototype.c input.dat output.dat
 

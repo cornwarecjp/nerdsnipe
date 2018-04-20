@@ -11,5 +11,5 @@ amaze.py.gz: amaze.py
 	gzip --keep --force amaze.py
 
 clean:
-	-rm puzzle.png amaze.py.gz
+	-rm puzzle.png amaze.py.gz qr-output.txt *.pyc
 
