@@ -1,6 +1,6 @@
 <html>
 <body>
-Note: there is a solution, with SHA256sum 083215477510be65f0bac53e84a531e826db4e3873f261dba2cdfc362843a37.
+Note: there is a solution, with SHA256sum 083215477510be65f0bac53e84a531e826db4e3873f261dba2cdfc362843a375.
 <p>
 Your program:<br>
 <form action="." method="POST">
@@ -12,6 +12,8 @@ echo $_POST["program"];
 <?php
 function runProgram()
 {
+	$tmpdir = "this_is_censored_in_the_public_Git_version";
+
 	$wouldBlock = false;
 	$lockfp = fopen("lock", "w+");
 	if(!flock($lockfp, LOCK_EX | LOCK_NB))
@@ -20,26 +22,26 @@ function runProgram()
 		return;
 	}
 
-	$fp = fopen("tmp/program.bf", "wb");
+	$fp = fopen("$tmpdir/program.bf", "wb");
 	fwrite($fp, $_POST["program"]);
 	fclose($fp);
 
 	$returnValue = 0;
-	system("python bf.py --compile tmp/program.bf tmp/program.c > tmp/compilerOutput.txt", $returnValue);
+	system("python bf.py --compile $tmpdir/program.bf $tmpdir/program.c > $tmpdir/compilerOutput.txt", $returnValue);
 	if($returnValue != 0)
 	{
-		$fp = fopen("tmp/compilerOutput.txt", "rb");
-		$output = fread($fp, filesize("tmp/compilerOutput.txt"));
+		$fp = fopen("$tmpdir/compilerOutput.txt", "rb");
+		$output = fread($fp, filesize("$tmpdir/compilerOutput.txt"));
 		fclose($fp);
 		echo $output;
 		return;
 	}
 
-	system("gcc -O0 -o tmp/program tmp/program.c");
-	system("python test.py tmp/program > tmp/testOutput.txt", $returnValue);
+	system("gcc -O0 -o $tmpdir/program $tmpdir/program.c");
+	system("python test.py $tmpdir $tmpdir/program > $tmpdir/testOutput.txt", $returnValue);
 
-	$fp = fopen("tmp/testOutput.txt", "rb");
-	$output = fread($fp, filesize("tmp/testOutput.txt"));
+	$fp = fopen("$tmpdir/testOutput.txt", "rb");
+	$output = fread($fp, filesize("$tmpdir/testOutput.txt"));
 	fclose($fp);
 	echo $output;
 
