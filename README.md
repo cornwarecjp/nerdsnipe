@@ -224,6 +224,9 @@ nowadays typically more than 100 bits is recommended for cryptographically
 secure passphrases. This left an unintended possibility of brute-forcing the
 values to enter, without solving certain parts of the puzzle.
 
+A note to puzzlers investigating the Javascript code: the code indeed allows
+for three values, while only two values are relevant for the puzzle. The third
+value is 1337, and was only used for testing.
 
 # Part 4: Rotating discs
 
@@ -331,6 +334,9 @@ velocities of the two discs:
 Entering this value into the Values page yields the following data:
 
 37107599e317f32f53e58571c857a45a4e1d1d88a46ae4983d3160f9962f5c0a
+
+And indeed, the friction coefficient is irrelevant; it's just there to invite
+puzzlers to try incorrect approaches to the puzzle.
 
 Note: this problem is based on this video: https://www.youtube.com/watch?v=GPAHZHW3-vg
 
