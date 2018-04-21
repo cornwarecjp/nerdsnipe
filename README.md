@@ -254,79 +254,79 @@ momentum does not apply.
 If you were to assume conservation of energy, you would make the following
 calculation:
 
-m1 = R1^2
-m2 = R2^2
+    m1 = R1^2
+    m2 = R2^2
 
-I1 = m1*R1^2 = R1^4
-I2 = m2*R2^2 = R2^4
+    I1 = m1*R1^2 = R1^4
+    I2 = m2*R2^2 = R2^4
 
-Eb = I1 * w1b^2              = R1^4 * w1b^2
-Ee = I1 * w1e^2 + I2 * w2e^2 = R1^4 * w1e^2 + R2^4 * w2e^2
+    Eb = I1 * w1b^2              = R1^4 * w1b^2
+    Ee = I1 * w1e^2 + I2 * w2e^2 = R1^4 * w1e^2 + R2^4 * w2e^2
 
-w1e * R1 = -w2e * R2
+    w1e * R1 = -w2e * R2
 
-Ee = Eb [naive]
-R1^4 * w1e^2 + R2^4 * [w1e * R1/R2]^2 = R1^4 * w1b^2
-[R1^4 + R2^4 * (R1/R2)^2] * w1e^2 = R1^4 * w1b^2
-[R1^4 + R2^2 * R1^2] * w1e = R1^4 * w1b^2
-w1e^2 = w1b^2 * R1^4 / [R1^4 + R2^2 * R1^2]
-      = w1b^2 * R1^2 / [R1^2 + R2^2]
-w1e = w1b * R1 / sqrt(R1^2 + R2^2)
-    = 0.7839617157352895 rad/s [wrong]
+    Ee = Eb [naive]
+    R1^4 * w1e^2 + R2^4 * [w1e * R1/R2]^2 = R1^4 * w1b^2
+    [R1^4 + R2^4 * (R1/R2)^2] * w1e^2 = R1^4 * w1b^2
+    [R1^4 + R2^2 * R1^2] * w1e = R1^4 * w1b^2
+    w1e^2 = w1b^2 * R1^4 / [R1^4 + R2^2 * R1^2]
+          = w1b^2 * R1^2 / [R1^2 + R2^2]
+    w1e = w1b * R1 / sqrt(R1^2 + R2^2)
+        = 0.7839617157352895 rad/s [wrong]
 
 If you were to assume conservation of angular momentum, you would make the
 following calculation:
 
-m1 = R1^2
-m2 = R2^2
+    m1 = R1^2
+    m2 = R2^2
 
-I1 = m1*R1^2 = R1^4
-I2 = m2*R2^2 = R2^4
+    I1 = m1*R1^2 = R1^4
+    I2 = m2*R2^2 = R2^4
 
-Lb = I1 * w1b            = R1^4 * w1b
-Le = I1 * w1e - I2 * w2e = R1^4 * w1e - R2^4 * w2e [naive]
+    Lb = I1 * w1b            = R1^4 * w1b
+    Le = I1 * w1e - I2 * w2e = R1^4 * w1e - R2^4 * w2e [naive]
 
-w1e * R1 = -w2e * R2
+    w1e * R1 = -w2e * R2
 
-Le = Lb [naive]
-R1^4 * w1e - R2^4 * w2e = R1^4 * w1b
-R1^4 * w1e - R2^4 * [-w1e * R1/R2] = R1^4 * w1b
-w1e * [R1^4 + R2^4 * (R1/R2)] = R1^4 * w1b
-w1e = w1b * R1^4 / [R1^4 + R2^4 * (R1/R2)]
-    = w1b * R1^4 / [R1^4 + R2^3 * R1]
-    = w1b * R1^3 / [R1^3 + R2^3]
-    = 0.6681898409601859 [wrong]
+    Le = Lb [naive]
+    R1^4 * w1e - R2^4 * w2e = R1^4 * w1b
+    R1^4 * w1e - R2^4 * [-w1e * R1/R2] = R1^4 * w1b
+    w1e * [R1^4 + R2^4 * (R1/R2)] = R1^4 * w1b
+    w1e = w1b * R1^4 / [R1^4 + R2^4 * (R1/R2)]
+        = w1b * R1^4 / [R1^4 + R2^3 * R1]
+        = w1b * R1^3 / [R1^3 + R2^3]
+        = 0.6681898409601859 [wrong]
 
 Finding the correct value can be done, for instance, this way:
 
 Whatever the force is, there is a fixed ratio between the change in angular
 velocities of the two discs:
 
-I1 = R1^4
-I2 = R2^4
-|dw1| = |F| * R1 / I1 = |F| / R1^3
-|dw2| = |F| * R2 / I2 = |F| / R2^3
-      = |dw1| * (R1/R2)^3
+    I1 = R1^4
+    I2 = R2^4
+    |dw1| = |F| * R1 / I1 = |F| / R1^3
+    |dw2| = |F| * R2 / I2 = |F| / R2^3
+          = |dw1| * (R1/R2)^3
 
-No matter how large the force is or how it changes in time, when integrating
-small changes in angular velocity over time, this ratio will always remain the
-same. This will be the end situation:
+    No matter how large the force is or how it changes in time, when integrating
+    small changes in angular velocity over time, this ratio will always remain the
+    same. This will be the end situation:
 
-|w1e| * R1 = |w2e| * R2
-(|w1b| - |dw1|) * R1 = |dw2| * R2
-(|w1b| - |dw1|) * R1 = [|dw1| * (R1/R2)^3] * R2
-|w1b| * R1 - |dw1| * R1 = |dw1| * R2 * (R1/R2)^3
-|w1b| * R1 = |dw1| * [R2 * (R1/R2)^3 + R1]
-|w1b| = |dw1| * [R1^2 / R2^2 + 1]
-|dw1| = |w1b| / [R1^2 / R2^2 + 1]
-      = |w1b| * R2^2 / [R1^2 + R2^2]
+    |w1e| * R1 = |w2e| * R2
+    (|w1b| - |dw1|) * R1 = |dw2| * R2
+    (|w1b| - |dw1|) * R1 = [|dw1| * (R1/R2)^3] * R2
+    |w1b| * R1 - |dw1| * R1 = |dw1| * R2 * (R1/R2)^3
+    |w1b| * R1 = |dw1| * [R2 * (R1/R2)^3 + R1]
+    |w1b| = |dw1| * [R1^2 / R2^2 + 1]
+    |dw1| = |w1b| / [R1^2 / R2^2 + 1]
+          = |w1b| * R2^2 / [R1^2 + R2^2]
 
-|w1e| = |w1b| - |dw1|
-      = |w1b| * {1 - R2^2 / [R1^2 + R2^2]}
-      = |w1b| * {[R1^2 + R2^2 - R2^2] / [R1^2 + R2^2]}
-      = |w1b| * R1^2 / [R1^2 + R2^2]
+    |w1e| = |w1b| - |dw1|
+          = |w1b| * {1 - R2^2 / [R1^2 + R2^2]}
+          = |w1b| * {[R1^2 + R2^2 - R2^2] / [R1^2 + R2^2]}
+          = |w1b| * R1^2 / [R1^2 + R2^2]
 
-      = 0.6145959717386188 rad/s
+          = 0.6145959717386188 rad/s
 
 Entering this value into the Values page yields the following data:
 
